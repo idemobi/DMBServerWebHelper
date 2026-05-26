@@ -1,0 +1,82 @@
+﻿#region Copyright
+
+// Game-Data-Forge Solution
+// Written by CONTART Jean-François & BOULOGNE Quentin
+// DMBServerWebHelper.csproj LanguageTools.cs create at 2026/04/07 21:04:27
+// ©2024-2026 idéMobi SARL FRANCE
+
+#endregion
+
+#region
+
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
+
+#endregion
+
+namespace DMBServerWebHelper
+{
+    /// <summary>
+    ///     Provides helpers for resolving the current web request language.
+    /// </summary>
+    public static class LanguageTools
+    {
+        #region Static methods
+
+        /// <summary>
+        ///     Resolves the current request language from ASP.NET Core localization, the language cookie,
+        ///     or the <c>Accept-Language</c> request header.
+        /// </summary>
+        /// <param name="httpContext">
+        ///     The HTTP context whose localization features, cookies, and headers are inspected.
+        /// </param>
+        /// <returns>
+        ///     The resolved language or culture name. When no value is available, returns
+        ///     <see cref="ServerWebHelperConfiguration.CookieLanguage"/> default value.
+        /// </returns>
+        /// <remarks>
+        ///     If ASP.NET Core has already resolved an <see cref="IRequestCultureFeature"/>, its UI culture
+        ///     name is returned first. Cookie values using the ASP.NET request culture format are normalized
+        ///     by returning the <c>c=</c> culture component.
+        /// </remarks>
+        public static string ResolveLanguage(HttpContext httpContext)
+        {
+            string? rawLang = null;
+            IRequestCultureFeature? feature = httpContext.Features.Get<IRequestCultureFeature>();
+            if (feature != null)
+            {
+                return feature.RequestCulture.UICulture.Name;
+            }
+
+            if (ServerWebHelperConfiguration.CookieLanguage.Exists(httpContext))
+            {
+                rawLang = ServerWebHelperConfiguration.CookieLanguage.GetValue(httpContext);
+            }
+            else
+            {
+                rawLang = httpContext.Request.Headers["Accept-Language"].ToString().Split(',').FirstOrDefault();
+            }
+
+            if (string.IsNullOrWhiteSpace(rawLang))
+            {
+                return ServerWebHelperConfiguration.CookieLanguage.DefaultValue;
+            }
+
+            if (rawLang.StartsWith("c=", StringComparison.OrdinalIgnoreCase))
+            {
+                var parts = rawLang.Split('|');
+                foreach (var part in parts)
+                {
+                    if (part.StartsWith("c="))
+                    {
+                        return part.Substring(2);
+                    }
+                }
+            }
+
+            return rawLang;
+        }
+
+        #endregion
+    }
+}
