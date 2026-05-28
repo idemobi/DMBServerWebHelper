@@ -95,9 +95,6 @@
         </Compile>
     </ItemGroup>
     <ItemGroup Condition=" '$(Configuration)' == 'Debug' " Label="Razor Generator">
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.8" />
-    </ItemGroup>
-    <ItemGroup Condition=" '$(Configuration)' == 'Debug' " Label="Razor Generator">
         <Content Update="Views\*">
             <Generator>RazorGenerator</Generator>
         </Content>

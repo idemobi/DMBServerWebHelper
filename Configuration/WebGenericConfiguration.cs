@@ -13,12 +13,8 @@ using System.Text.Json.Serialization;
 using DMBServerHelper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
-#if DEBUG
-using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
-#endif
 
 #endregion
 
@@ -45,15 +41,15 @@ namespace DMBServerWebHelper
         ///     The web application builder that receives common configuration services.
         /// </param>
         /// <param name="runtimeCompileForDev">
-        ///     A value indicating whether Razor runtime compilation should be enabled in debug builds.
+        ///     Compatibility flag kept for callers that previously requested Razor runtime compilation.
         /// </param>
         /// <param name="path">
-        ///     The relative path from the application content root to the NuGet source folder used for
-        ///     runtime compilation file providers.
+        ///     Compatibility path kept for callers that previously configured Razor runtime compilation file providers.
         /// </param>
         /// <remarks>
-        ///     Runtime compilation registration is compiled only in <c>DEBUG</c> builds. When enabled,
-        ///     the method adds a physical file provider for the configured package namespace.
+        ///     Razor runtime compilation is obsolete in ASP.NET Core. This method now only loads the
+        ///     common configuration lifecycle; development workflows should use Hot Reload or the
+        ///     default build-time Razor compilation instead of runtime compilation.
         /// </remarks>
         public static void LoadConfigForDebug(
             WebApplicationBuilder builder,
@@ -62,25 +58,6 @@ namespace DMBServerWebHelper
         )
         {
             LoadCommonConfig(builder);
-            // add razor
-            Type configurationType = Config.GetType();
-            if (runtimeCompileForDev)
-            {
-                #if DEBUG
-                var tMvcBuilder = builder.Services.AddRazorPages();
-                tMvcBuilder.AddRazorRuntimeCompilation();
-                builder.Services.Configure<MvcRazorRuntimeCompilationOptions>(sOptions =>
-                {
-                    // GDFLogger.TraceAttention(string.Format(GDFLogger.K_RAZOR_RUNTIME_COMPILATION_ENABLE, configurationType.Namespace, configurationType.Name));
-                    var tLibraryPath = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, path, configurationType.Namespace));
-                    sOptions.FileProviders.Add(new PhysicalFileProvider(tLibraryPath));
-                });
-                #endif
-            }
-            else
-            {
-                //GDFLogger.TraceAttention(string.Format(GDFLogger.K_RAZOR_COMPILE_NOT_FOR_DEV, configurationType.Namespace));
-            }
         }
 
         #endregion
