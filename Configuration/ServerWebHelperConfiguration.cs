@@ -44,27 +44,37 @@ namespace DMBServerWebHelper
         ///     Defines the optional analytics consent cookie used by applications that enable analytics features.
         /// </summary>
         /// <remarks>
-        ///     The field is reserved for host applications and is not initialized by the default configuration.
+        ///     The field is reserved for host applications and remains <see langword="null"/> until a host
+        ///     application assigns an analytics cookie definition.
         /// </remarks>
-        public static CookieBool CookieAnalytics;
+        public static CookieBool? CookieAnalytics;
 
         /// <summary>
         ///     Defines the session consent cookie registered by <see cref="AfterConfiguration"/>.
         /// </summary>
-        public static CookieBool CookieConsent;
+        /// <remarks>
+        ///     The value is <see langword="null"/> until <see cref="AfterConfiguration"/> registers the default
+        ///     consent cookie definition.
+        /// </remarks>
+        public static CookieBool? CookieConsent;
 
         /// <summary>
         ///     Defines the culture cookie used to remember the selected language for the web layout.
         /// </summary>
-        public static CookieString CookieLanguage;
+        /// <remarks>
+        ///     The value is <see langword="null"/> until <see cref="AfterConfiguration"/> registers the default
+        ///     culture cookie definition.
+        /// </remarks>
+        public static CookieString? CookieLanguage;
 
         /// <summary>
         ///     Defines the optional advertising consent cookie used by applications that enable advertising features.
         /// </summary>
         /// <remarks>
-        ///     The field is reserved for host applications and is not initialized by the default configuration.
+        ///     The field is reserved for host applications and remains <see langword="null"/> until a host
+        ///     application assigns an advertising cookie definition.
         /// </remarks>
-        public static CookieBool CookiePub;
+        public static CookieBool? CookiePub;
 
         #endregion
 
@@ -237,12 +247,12 @@ namespace DMBServerWebHelper
             appBuilder.Services.AddLocalization();
 
             appBuilder.Services.AddControllersWithViews().AddRazorOptions(options => { options.ViewLocationExpanders.Add(new WebLocalizedViewLocationExpander()); });
-            WebLocalizer.DataAnnotation = WebLocalizer.GetLocalizer<DMBServerWebHelperDataAnnotationLocalization>();
-            WebLocalizer.Internal = WebLocalizer.GetLocalizer<DMBServerWebHelperInternalLocalization>();
+            WebLocalizer.DataAnnotationLocalizer = WebLocalizer.GetLocalizer<DMBServerWebHelperDataAnnotationLocalization>();
+            WebLocalizer.InternalLocalizer = WebLocalizer.GetLocalizer<DMBServerWebHelperInternalLocalization>();
 
             appBuilder.Services.AddMvc()
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
-                .AddDataAnnotationsLocalization(options => { options.DataAnnotationLocalizerProvider = (type, factory) => WebLocalizer.DataAnnotation; });
+                .AddDataAnnotationsLocalization(options => { options.DataAnnotationLocalizerProvider = (type, factory) => WebLocalizer.DataAnnotationLocalizer; });
 
             appBuilder.Services.ConfigureOptions<ServerWebHelperConfigureOptions>();
             // appBuilder.Services.AddHostedService<ServerWebHelperStartupService>();

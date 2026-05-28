@@ -6,6 +6,10 @@ namespace DMBServerWebHelper
     /// <summary>
     ///     Provides deterministic security hash helpers for web infrastructure code.
     /// </summary>
+    /// <remarks>
+    ///     These helpers are suitable for deterministic fingerprints and comparison keys. They are not
+    ///     password-storage primitives and do not add a salt, work factor, or secret key.
+    /// </remarks>
     public static class SecurityHashTools
     {
         /// <summary>
@@ -17,6 +21,10 @@ namespace DMBServerWebHelper
         /// <returns>
         ///     The SHA-256 hash encoded as lowercase hexadecimal text.
         /// </returns>
+        /// <remarks>
+        ///     The method is deterministic: the same input always produces the same output. Do not use it
+        ///     directly for user passwords or other secrets that require slow, salted hashing.
+        /// </remarks>
         public static string GenerateSha256(string? value)
         {
             string input = value ?? string.Empty;

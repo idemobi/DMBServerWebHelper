@@ -133,14 +133,14 @@ namespace DMBServerWebHelper
 
             // DataAnnotation
             if (dataAnnotationClass is not null)
-                WebLocalizer.DataAnnotation.InjectResource(
+                WebLocalizer.DataAnnotationLocalizer.InjectResource(
                     dataAnnotationClass.Name,
                     ResolveLocalizer(serviceProvider, dataAnnotationClass)
                 );
 
             // Global
             if (internalLocalizerClass is not null)
-                WebLocalizer.Internal.InjectResource(
+                WebLocalizer.InternalLocalizer.InjectResource(
                     internalLocalizerClass.Name,
                     ResolveLocalizer(serviceProvider, internalLocalizerClass)
                 );

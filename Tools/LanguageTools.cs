@@ -9,6 +9,7 @@
 
 #region
 
+using DMBServerHelper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 
@@ -32,7 +33,8 @@ namespace DMBServerWebHelper
         /// </param>
         /// <returns>
         ///     The resolved language or culture name. When no value is available, returns
-        ///     <see cref="ServerWebHelperConfiguration.CookieLanguage"/> default value.
+        ///     the <see cref="ServerWebHelperConfiguration.CookieLanguage"/> default value, or <c>en-US</c>
+        ///     when the language cookie has not been registered yet.
         /// </returns>
         /// <remarks>
         ///     If ASP.NET Core has already resolved an <see cref="IRequestCultureFeature"/>, its UI culture
@@ -48,9 +50,10 @@ namespace DMBServerWebHelper
                 return feature.RequestCulture.UICulture.Name;
             }
 
-            if (ServerWebHelperConfiguration.CookieLanguage.Exists(httpContext))
+            CookieString? languageCookie = ServerWebHelperConfiguration.CookieLanguage;
+            if (languageCookie?.Exists(httpContext) == true)
             {
-                rawLang = ServerWebHelperConfiguration.CookieLanguage.GetValue(httpContext);
+                rawLang = languageCookie.GetValue(httpContext);
             }
             else
             {
@@ -59,7 +62,7 @@ namespace DMBServerWebHelper
 
             if (string.IsNullOrWhiteSpace(rawLang))
             {
-                return ServerWebHelperConfiguration.CookieLanguage.DefaultValue;
+                return languageCookie?.DefaultValue ?? "en-US";
             }
 
             if (rawLang.StartsWith("c=", StringComparison.OrdinalIgnoreCase))
