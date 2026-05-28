@@ -151,23 +151,18 @@ namespace DMBServerWebHelper
             int image2dX;
             int image2dY;
 
-            using (SKPaint drawStyle = new())
+            using SKTypeface typeface = SKTypeface.FromFamilyName(parameters.FontName, SKFontStyle.Italic);
+            using SKFont captchaFont = new(typeface, parameters.FontSizeMax);
+
+            compensateDeepCharacters = (int)captchaFont.Size / 5;
+            if (string.Equals(captchaText, captchaText.ToUpperInvariant(), StringComparison.Ordinal))
             {
-                drawStyle.Typeface = SKTypeface.FromFamilyName(parameters.FontName, SKFontStyle.Italic);
-                drawStyle.TextSize = parameters.FontSizeMax;
-                drawStyle.Color = PaintColor;
-                drawStyle.IsAntialias = true;
-
-                compensateDeepCharacters = (int)drawStyle.TextSize / 5;
-                if (string.Equals(captchaText, captchaText.ToUpperInvariant(), StringComparison.Ordinal))
-                {
-                    compensateDeepCharacters = 0;
-                }
-
-                drawStyle.MeasureText(captchaText, ref size);
-                image2dX = (int)size.Width + parameters.FontSizeMax / 2;
-                image2dY = (int)size.Height + parameters.FontSizeMax / 2 + compensateDeepCharacters;
+                compensateDeepCharacters = 0;
             }
+
+            captchaFont.MeasureText(captchaText, out size);
+            image2dX = (int)size.Width + parameters.FontSizeMax / 2;
+            image2dY = (int)size.Height + parameters.FontSizeMax / 2 + compensateDeepCharacters;
 
             using (SKBitmap image2d = new(image2dX, image2dY, SKColorType.Bgra8888, SKAlphaType.Premul))
             using (SKCanvas canvas = new(image2d))
@@ -176,11 +171,9 @@ namespace DMBServerWebHelper
 
                 using (SKPaint drawStyle = new())
                 {
-                    drawStyle.Typeface = SKTypeface.FromFamilyName(parameters.FontName, SKFontStyle.Italic);
-                    drawStyle.TextSize = parameters.FontSizeMax;
                     drawStyle.Color = PaintColor;
                     drawStyle.IsAntialias = true;
-                    canvas.DrawText(captchaText, parameters.FontSizeMax / 4f, image2dY - parameters.FontSizeMax / 4f - compensateDeepCharacters, drawStyle);
+                    canvas.DrawText(captchaText, parameters.FontSizeMax / 4f, image2dY - parameters.FontSizeMax / 4f - compensateDeepCharacters, SKTextAlign.Left, captchaFont, drawStyle);
                 }
 
                 SKImageInfo imageInfo = new(image2dX, image2dY, SKColorType.Bgra8888, SKAlphaType.Premul);
@@ -190,11 +183,9 @@ namespace DMBServerWebHelper
 
                 using (SKPaint paintInfo = new())
                 {
-                    paintInfo.Typeface = SKTypeface.FromFamilyName(parameters.FontName, SKFontStyle.Italic);
-                    paintInfo.TextSize = parameters.FontSizeMax;
                     paintInfo.Color = PaintColor;
                     paintInfo.IsAntialias = true;
-                    plainCanvas.DrawText(captchaText, parameters.FontSizeMax / 4f, image2dY - parameters.FontSizeMax / 4f - compensateDeepCharacters, paintInfo);
+                    plainCanvas.DrawText(captchaText, parameters.FontSizeMax / 4f, image2dY - parameters.FontSizeMax / 4f - compensateDeepCharacters, SKTextAlign.Left, captchaFont, paintInfo);
                 }
 
                 plainCanvas.Flush();
