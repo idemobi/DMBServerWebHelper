@@ -44,7 +44,7 @@
         <GenerateAssemblyMetadataAttribute>true</GenerateAssemblyMetadataAttribute>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <DefineConstants/>
+        <DefineConstants />
         <DocumentationFile>bin\Release\net10.0\DMBServerWebHelper.xml</DocumentationFile>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -61,27 +61,27 @@
     <Choose>
         <When Condition=" '$(Configuration)' == 'NuGet' ">
             <ItemGroup Label="Case NuGet">
-                <PackageReference Include="DMBServerHelper" Version="0.12.0"/>
+                <PackageReference Include="DMBServerHelper" Version="0.12.0" />
             </ItemGroup>
         </When>
         <Otherwise>
             <ItemGroup Label="Case Debug, Release, Deployment">
-                <ProjectReference Include="..\DMBServerHelper\DMBServerHelper.csproj"/>
+                <ProjectReference Include="..\DMBServerHelper\DMBServerHelper.csproj" />
             </ItemGroup>
         </Otherwise>
     </Choose>
     <ItemGroup Label="Import package">
         <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="10.0.8" />
-        <PackageReference Include="SkiaSharp" Version="3.119.2" />
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.119.2" />
-        <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="3.119.2" />
-        <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="3.119.2" />
+        <PackageReference Include="SkiaSharp" Version="3.119.4" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.119.4" />
+        <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="3.119.4" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="3.119.4" />
     </ItemGroup>
     <ItemGroup Label="Files in package">
-        <None Include="README.md" Pack="true" PackagePath="\"/>
-        <None Include="LICENSE.md" Pack="true" PackagePath="\"/>
-        <None Include="DMBServerWebHelper.png" Pack="true" PackagePath="\"/>
-        <None Remove="**/*.meta"/>
+        <None Include="README.md" Pack="true" PackagePath="\" />
+        <None Include="LICENSE.md" Pack="true" PackagePath="\" />
+        <None Include="DMBServerWebHelper.png" Pack="true" PackagePath="\" />
+        <None Remove="**/*.meta" />
         <Compile Update="Resources\DMBServerWebHelperDataAnnotationLocalization.Designer.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -102,7 +102,7 @@
         </Content>
     </ItemGroup>
     <ItemGroup Label="EmbeddedResource">
-        <Content Remove="wwwroot\**\*"/>
+        <Content Remove="wwwroot\**\*" />
         <EmbeddedResource Include="wwwroot\**\*" />
         <EmbeddedResource Update="Resources\DMBServerWebHelperInternalLocalization.en-US.resx">
             <DependentUpon>DMBServerWebHelperInternalLocalization.resx</DependentUpon>
