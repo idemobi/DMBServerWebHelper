@@ -37,7 +37,7 @@ namespace DMBServerWebHelper
         ///     or <c>None</c> when the context or culture cannot be resolved.
         /// </returns>
         /// <remarks>
-        ///     When the header is empty, the method falls back to <see cref="ServerHelperConfiguration.Config"/>
+        ///     When the header is empty, the method falls back to <see cref="ServerHelperConfiguration"/>
         ///     base language, then to <c>en-US</c>. Invalid culture names return <c>None</c>.
         /// </remarks>
         public static string GetCountryCode(HttpContext? context)
