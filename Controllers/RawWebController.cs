@@ -1,9 +1,7 @@
 #region Copyright
 
-// Game-Data-Forge Solution
-// Written by CONTART Jean-François & BOULOGNE Quentin
-// DMBServerWebHelper.csproj RawWebController.cs create at 2026/04/07 21:04:27
-// ©2024-2026 idéMobi SARL FRANCE
+// ©2002-2026 idéMobi
+// www.idemobi.com
 
 #endregion
 
@@ -20,7 +18,7 @@ namespace DMBServerWebHelper.Controllers
     /// </summary>
     /// <remarks>
     ///     Derive from this type when a controller should participate in the shared server web
-    ///     conventions while still using the standard ASP.NET Core <see cref="Controller"/> behavior.
+    ///     conventions while still using the standard ASP.NET Core <see cref="Controller" /> behavior.
     /// </remarks>
     public abstract class RawWebController : Controller
     {

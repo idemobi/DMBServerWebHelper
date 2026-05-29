@@ -1,8 +1,19 @@
+#region Copyright
+
+// ©2002-2026 idéMobi
+// www.idemobi.com
+
+#endregion
+
+#region
+
 using System.Text;
 using DMBServerHelper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SkiaSharp;
+
+#endregion
 
 namespace DMBServerWebHelper
 {
@@ -10,18 +21,29 @@ namespace DMBServerWebHelper
     ///     Generates captcha values, renders captcha PNG images, and validates captcha input stored in session state.
     /// </summary>
     /// <remarks>
-    ///     Captcha values are stored through a private <see cref="SessionString"/> named <c>Captcha</c>.
+    ///     Captcha values are stored through a private <see cref="SessionString" /> named <c>Captcha</c>.
     ///     Consumers must ensure ASP.NET Core session is configured and available before calling methods
     ///     that read or write captcha state.
     /// </remarks>
     public static class CaptchaFactory
     {
-        private static readonly Random KRandom = new();
-        private static readonly SessionString Captcha = new("Captcha", "Captcha", "Captcha", SessionDefinitionGroup.Invisible, "not defined");
+        #region Static fields and properties
 
         private static SKColor BackgroundColor { get; set; } = SKColors.Transparent;
-        private static SKColor PaintColor { get; set; } = SKColors.DarkGray;
-        private static SKColor NoisePointColor { get; set; } = SKColors.Black;
+        private static readonly SessionString Captcha = new("Captcha", "Captcha", "Captcha", SessionDefinitionGroup.Invisible, "not defined");
+
+        private static Func<(int oldX, int oldY, double distortionLevel, int w, int h), (int newX, int newY)> DistortionFunc { get; } =
+            oldPos =>
+            {
+                int newX = (int)(oldPos.oldX + (oldPos.distortionLevel * Math.Sin(Math.PI * oldPos.oldY / 64.0)));
+                int newY = (int)(oldPos.oldY + (oldPos.distortionLevel * Math.Cos(Math.PI * oldPos.oldX / 64.0)));
+                if (newX < 0 || newX >= oldPos.w) newX = 0;
+                if (newY < 0 || newY >= oldPos.h) newY = 0;
+
+                return (newX, newY);
+            };
+
+        private static readonly Random KRandom = new();
 
         private static SKColor[] LinesColor { get; set; } =
         [
@@ -32,6 +54,24 @@ namespace DMBServerWebHelper
             SKColors.Violet
         ];
 
+        private static SKColor NoisePointColor { get; set; } = SKColors.Black;
+
+        private static Func<(int w, int h, double noisePointsPercent), IEnumerable<(int x, int y)>> NoisePointMapGenFunc { get; } =
+            data =>
+            {
+                Random random = new();
+                int noisePointCount = (int)(data.w * data.h * data.noisePointsPercent);
+                return Enumerable.Range(0, noisePointCount)
+                    .Select(_ => (random.Next(data.w), random.Next(data.h)))
+                    .ToArray();
+            };
+
+        private static SKColor PaintColor { get; set; } = SKColors.DarkGray;
+
+        #endregion
+
+        #region Static methods
+
         /// <summary>
         ///     Renders the captcha currently stored in the session as a PNG file stream result.
         /// </summary>
@@ -39,10 +79,10 @@ namespace DMBServerWebHelper
         ///     The HTTP context whose session contains the stored captcha value.
         /// </param>
         /// <param name="parameters">
-        ///     Optional rendering parameters. When <see langword="null"/>, default <see cref="CaptchaParameters"/> are used.
+        ///     Optional rendering parameters. When <see langword="null" />, default <see cref="CaptchaParameters" /> are used.
         /// </param>
         /// <returns>
-        ///     A <see cref="FileStreamResult"/> containing a PNG representation of the stored captcha value.
+        ///     A <see cref="FileStreamResult" /> containing a PNG representation of the stored captcha value.
         /// </returns>
         /// <remarks>
         ///     When no captcha value is available, the image is rendered from the fallback text <c>Error</c>.
@@ -52,93 +92,6 @@ namespace DMBServerWebHelper
             string? value = GetStoredCaptcha(httpContext);
             byte[] image = GetCaptcha(value ?? "Error", parameters);
             return new FileStreamResult(new MemoryStream(image), "image/png");
-        }
-
-        /// <summary>
-        ///     Creates a new random captcha value, stores it in session, and returns the rendered PNG as base64 text.
-        /// </summary>
-        /// <param name="httpContext">
-        ///     The HTTP context whose session receives the generated captcha value.
-        /// </param>
-        /// <param name="parameters">
-        ///     Optional rendering parameters. When <see langword="null"/>, default <see cref="CaptchaParameters"/> are used.
-        /// </param>
-        /// <returns>
-        ///     The PNG image bytes encoded with base64. The returned value does not include a data URI prefix.
-        /// </returns>
-        /// <remarks>
-        ///     The generated value is converted to uppercase before it is stored in session.
-        /// </remarks>
-        public static string RandomCaptchaToImage(HttpContext httpContext, CaptchaParameters? parameters = null)
-        {
-            string captcha = RandomCaptchaNoMistake(8).ToUpperInvariant();
-            Captcha.SetValue(httpContext, captcha);
-            byte[] image = GetCaptcha(captcha, parameters);
-            return Convert.ToBase64String(image);
-        }
-
-        /// <summary>
-        ///     Generates a random captcha string using characters chosen to reduce visual ambiguity.
-        /// </summary>
-        /// <param name="length">
-        ///     The requested number of characters.
-        /// </param>
-        /// <returns>
-        ///     A random captcha string containing exactly <paramref name="length"/> characters.
-        /// </returns>
-        /// <remarks>
-        ///     The character set intentionally excludes many visually ambiguous letters and digits.
-        /// </remarks>
-        public static string RandomCaptchaNoMistake(uint length)
-        {
-            StringBuilder result = new();
-            const string chars = "cdefhkmnpqrtwxyCEFHKMNPRTWXY379";
-            int charLength = chars.Length;
-
-            while (result.Length < length)
-            {
-                result.Append(chars[KRandom.Next(0, charLength)]);
-            }
-
-            return result.ToString();
-        }
-
-        /// <summary>
-        ///     Reads the captcha value currently stored in session.
-        /// </summary>
-        /// <param name="httpContext">
-        ///     The HTTP context whose session contains the captcha value, or <see langword="null"/>.
-        /// </param>
-        /// <returns>
-        ///     The stored captcha value, or the underlying session definition fallback when no value is available.
-        /// </returns>
-        public static string GetStoredCaptcha(HttpContext? httpContext)
-        {
-            return Captcha.GetValue(httpContext);
-        }
-
-        /// <summary>
-        ///     Compares user-provided captcha text with the captcha value stored in session.
-        /// </summary>
-        /// <param name="httpContext">
-        ///     The HTTP context whose session contains the expected captcha value.
-        /// </param>
-        /// <param name="captcha">
-        ///     The user-provided captcha text to validate.
-        /// </param>
-        /// <returns>
-        ///     <see langword="true"/> when the provided text matches the stored captcha using an
-        ///     ordinal case-insensitive comparison; otherwise, <see langword="false"/>.
-        /// </returns>
-        public static bool TestCaptcha(HttpContext httpContext, string captcha)
-        {
-            string? stored = GetStoredCaptcha(httpContext);
-            if (stored == null)
-            {
-                return false;
-            }
-
-            return string.Equals(captcha, stored, StringComparison.OrdinalIgnoreCase);
         }
 
         private static byte[] GetCaptcha(string captchaText, CaptchaParameters? parameters = null)
@@ -165,95 +118,163 @@ namespace DMBServerWebHelper
             image2dY = (int)size.Height + parameters.FontSizeMax / 2 + compensateDeepCharacters;
 
             using (SKBitmap image2d = new(image2dX, image2dY, SKColorType.Bgra8888, SKAlphaType.Premul))
-            using (SKCanvas canvas = new(image2d))
-            {
-                canvas.DrawColor(BackgroundColor);
-
-                using (SKPaint drawStyle = new())
+                using (SKCanvas canvas = new(image2d))
                 {
-                    drawStyle.Color = PaintColor;
-                    drawStyle.IsAntialias = true;
-                    canvas.DrawText(captchaText, parameters.FontSizeMax / 4f, image2dY - parameters.FontSizeMax / 4f - compensateDeepCharacters, SKTextAlign.Left, captchaFont, drawStyle);
-                }
+                    canvas.DrawColor(BackgroundColor);
 
-                SKImageInfo imageInfo = new(image2dX, image2dY, SKColorType.Bgra8888, SKAlphaType.Premul);
-                using SKSurface plainSkSurface = SKSurface.Create(imageInfo);
-                SKCanvas plainCanvas = plainSkSurface.Canvas;
-                plainCanvas.Clear(BackgroundColor);
-
-                using (SKPaint paintInfo = new())
-                {
-                    paintInfo.Color = PaintColor;
-                    paintInfo.IsAntialias = true;
-                    plainCanvas.DrawText(captchaText, parameters.FontSizeMax / 4f, image2dY - parameters.FontSizeMax / 4f - compensateDeepCharacters, SKTextAlign.Left, captchaFont, paintInfo);
-                }
-
-                plainCanvas.Flush();
-
-                SKImageInfo imageInfoSurface = new(image2dX, image2dY, SKColorType.Bgra8888, SKAlphaType.Premul);
-                using SKSurface captchaSkSurface = SKSurface.Create(imageInfoSurface);
-                SKCanvas captchaCanvas = captchaSkSurface.Canvas;
-                Random random = new();
-
-                double distortionLevel = parameters.MinDistortion + (parameters.MaxDistortion - parameters.MinDistortion) * random.NextDouble();
-                if (random.NextDouble() > 0.5)
-                {
-                    distortionLevel *= -1;
-                }
-
-                SKPixmap plainPixmap = plainSkSurface.PeekPixels();
-                for (int x = 0; x < image2dX; x++)
-                {
-                    for (int y = 0; y < image2dY; y++)
+                    using (SKPaint drawStyle = new())
                     {
-                        (int newX, int newY) = DistortionFunc((x, y, distortionLevel, image2dX, image2dY));
-                        SKColor originalPixel = plainPixmap.GetPixelColor(newX, newY);
-                        captchaCanvas.DrawPoint(x, y, originalPixel);
+                        drawStyle.Color = PaintColor;
+                        drawStyle.IsAntialias = true;
+                        canvas.DrawText(captchaText, parameters.FontSizeMax / 4f, image2dY - parameters.FontSizeMax / 4f - compensateDeepCharacters, SKTextAlign.Left, captchaFont, drawStyle);
                     }
+
+                    SKImageInfo imageInfo = new(image2dX, image2dY, SKColorType.Bgra8888, SKAlphaType.Premul);
+                    using SKSurface plainSkSurface = SKSurface.Create(imageInfo);
+                    SKCanvas plainCanvas = plainSkSurface.Canvas;
+                    plainCanvas.Clear(BackgroundColor);
+
+                    using (SKPaint paintInfo = new())
+                    {
+                        paintInfo.Color = PaintColor;
+                        paintInfo.IsAntialias = true;
+                        plainCanvas.DrawText(captchaText, parameters.FontSizeMax / 4f, image2dY - parameters.FontSizeMax / 4f - compensateDeepCharacters, SKTextAlign.Left, captchaFont, paintInfo);
+                    }
+
+                    plainCanvas.Flush();
+
+                    SKImageInfo imageInfoSurface = new(image2dX, image2dY, SKColorType.Bgra8888, SKAlphaType.Premul);
+                    using SKSurface captchaSkSurface = SKSurface.Create(imageInfoSurface);
+                    SKCanvas captchaCanvas = captchaSkSurface.Canvas;
+                    Random random = new();
+
+                    double distortionLevel = parameters.MinDistortion + (parameters.MaxDistortion - parameters.MinDistortion) * random.NextDouble();
+                    if (random.NextDouble() > 0.5)
+                    {
+                        distortionLevel *= -1;
+                    }
+
+                    SKPixmap plainPixmap = plainSkSurface.PeekPixels();
+                    for (int x = 0; x < image2dX; x++)
+                    {
+                        for (int y = 0; y < image2dY; y++)
+                        {
+                            (int newX, int newY) = DistortionFunc((x, y, distortionLevel, image2dX, image2dY));
+                            SKColor originalPixel = plainPixmap.GetPixelColor(newX, newY);
+                            captchaCanvas.DrawPoint(x, y, originalPixel);
+                        }
+                    }
+
+                    IEnumerable<(int x, int y)> noisePointMap = NoisePointMapGenFunc((image2dX, image2dY, parameters.NoisePointsPercent));
+                    foreach ((int x, int y) in noisePointMap)
+                    {
+                        captchaCanvas.DrawPoint(x, y, NoisePointColor);
+                    }
+
+                    SKPaint drawLineNoise = new();
+                    for (int i = 0; i < LinesColor.Length; i++)
+                    {
+                        drawLineNoise.Color = LinesColor[i];
+                        drawLineNoise.StrokeWidth = random.Next(parameters.StrokeWidthMin, parameters.StrokeWidthMax);
+                        captchaCanvas.DrawLine(random.Next(0, image2dX), random.Next(0, image2dY), random.Next(0, image2dX), random.Next(0, image2dY), drawLineNoise);
+                    }
+
+                    captchaCanvas.Flush();
+
+                    using SKData png = captchaSkSurface.Snapshot().Encode(SKEncodedImageFormat.Png, 100);
+                    imageBytes = png.ToArray();
                 }
-
-                IEnumerable<(int x, int y)> noisePointMap = NoisePointMapGenFunc((image2dX, image2dY, parameters.NoisePointsPercent));
-                foreach ((int x, int y) in noisePointMap)
-                {
-                    captchaCanvas.DrawPoint(x, y, NoisePointColor);
-                }
-
-                SKPaint drawLineNoise = new();
-                for (int i = 0; i < LinesColor.Length; i++)
-                {
-                    drawLineNoise.Color = LinesColor[i];
-                    drawLineNoise.StrokeWidth = random.Next(parameters.StrokeWidthMin, parameters.StrokeWidthMax);
-                    captchaCanvas.DrawLine(random.Next(0, image2dX), random.Next(0, image2dY), random.Next(0, image2dX), random.Next(0, image2dY), drawLineNoise);
-                }
-
-                captchaCanvas.Flush();
-
-                using SKData png = captchaSkSurface.Snapshot().Encode(SKEncodedImageFormat.Png, 100);
-                imageBytes = png.ToArray();
-            }
 
             return imageBytes;
         }
 
-        private static Func<(int oldX, int oldY, double distortionLevel, int w, int h), (int newX, int newY)> DistortionFunc { get; } =
-            oldPos =>
-            {
-                int newX = (int)(oldPos.oldX + (oldPos.distortionLevel * Math.Sin(Math.PI * oldPos.oldY / 64.0)));
-                int newY = (int)(oldPos.oldY + (oldPos.distortionLevel * Math.Cos(Math.PI * oldPos.oldX / 64.0)));
-                if (newX < 0 || newX >= oldPos.w) newX = 0;
-                if (newY < 0 || newY >= oldPos.h) newY = 0;
+        /// <summary>
+        ///     Reads the captcha value currently stored in session.
+        /// </summary>
+        /// <param name="httpContext">
+        ///     The HTTP context whose session contains the captcha value, or <see langword="null" />.
+        /// </param>
+        /// <returns>
+        ///     The stored captcha value, or the underlying session definition fallback when no value is available.
+        /// </returns>
+        public static string GetStoredCaptcha(HttpContext? httpContext)
+        {
+            return Captcha.GetValue(httpContext);
+        }
 
-                return (newX, newY);
-            };
+        /// <summary>
+        ///     Generates a random captcha string using characters chosen to reduce visual ambiguity.
+        /// </summary>
+        /// <param name="length">
+        ///     The requested number of characters.
+        /// </param>
+        /// <returns>
+        ///     A random captcha string containing exactly <paramref name="length" /> characters.
+        /// </returns>
+        /// <remarks>
+        ///     The character set intentionally excludes many visually ambiguous letters and digits.
+        /// </remarks>
+        public static string RandomCaptchaNoMistake(uint length)
+        {
+            StringBuilder result = new();
+            const string chars = "cdefhkmnpqrtwxyCEFHKMNPRTWXY379";
+            int charLength = chars.Length;
 
-        private static Func<(int w, int h, double noisePointsPercent), IEnumerable<(int x, int y)>> NoisePointMapGenFunc { get; } =
-            data =>
+            while (result.Length < length)
             {
-                Random random = new();
-                int noisePointCount = (int)(data.w * data.h * data.noisePointsPercent);
-                return Enumerable.Range(0, noisePointCount)
-                    .Select(_ => (random.Next(data.w), random.Next(data.h)))
-                    .ToArray();
-            };
+                result.Append(chars[KRandom.Next(0, charLength)]);
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>
+        ///     Creates a new random captcha value, stores it in session, and returns the rendered PNG as base64 text.
+        /// </summary>
+        /// <param name="httpContext">
+        ///     The HTTP context whose session receives the generated captcha value.
+        /// </param>
+        /// <param name="parameters">
+        ///     Optional rendering parameters. When <see langword="null" />, default <see cref="CaptchaParameters" /> are used.
+        /// </param>
+        /// <returns>
+        ///     The PNG image bytes encoded with base64. The returned value does not include a data URI prefix.
+        /// </returns>
+        /// <remarks>
+        ///     The generated value is converted to uppercase before it is stored in session.
+        /// </remarks>
+        public static string RandomCaptchaToImage(HttpContext httpContext, CaptchaParameters? parameters = null)
+        {
+            string captcha = RandomCaptchaNoMistake(8).ToUpperInvariant();
+            Captcha.SetValue(httpContext, captcha);
+            byte[] image = GetCaptcha(captcha, parameters);
+            return Convert.ToBase64String(image);
+        }
+
+        /// <summary>
+        ///     Compares user-provided captcha text with the captcha value stored in session.
+        /// </summary>
+        /// <param name="httpContext">
+        ///     The HTTP context whose session contains the expected captcha value.
+        /// </param>
+        /// <param name="captcha">
+        ///     The user-provided captcha text to validate.
+        /// </param>
+        /// <returns>
+        ///     <see langword="true" /> when the provided text matches the stored captcha using an
+        ///     ordinal case-insensitive comparison; otherwise, <see langword="false" />.
+        /// </returns>
+        public static bool TestCaptcha(HttpContext httpContext, string captcha)
+        {
+            string? stored = GetStoredCaptcha(httpContext);
+            if (stored == null)
+            {
+                return false;
+            }
+
+            return string.Equals(captcha, stored, StringComparison.OrdinalIgnoreCase);
+        }
+
+        #endregion
     }
 }

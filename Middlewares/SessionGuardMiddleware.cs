@@ -1,9 +1,7 @@
 #region Copyright
 
-// Game-Data-Forge Solution
-// Written by CONTART Jean-François & BOULOGNE Quentin
-// DMBServerWebHelper.csproj SessionGuardMiddleware.cs create at 2026/04/07 21:04:27
-// ©2024-2026 idéMobi SARL FRANCE
+// ©2002-2026 idéMobi
+// www.idemobi.com
 
 #endregion
 
@@ -33,7 +31,7 @@ namespace DMBServerWebHelper
         #region Instance constructors and destructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SessionGuardMiddleware"/> class.
+        ///     Initializes a new instance of the <see cref="SessionGuardMiddleware" /> class.
         /// </summary>
         /// <param name="next">
         ///     The next middleware delegate in the ASP.NET Core request pipeline.

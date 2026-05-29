@@ -1,9 +1,7 @@
 #region Copyright
 
-// Game-Data-Forge Solution
-// Written by CONTART Jean-François & BOULOGNE Quentin
-// DMBServerWebHelper.csproj CaptchaParameters.cs create at 2026/05/14
-// ©2024-2026 idéMobi SARL FRANCE
+// ©2002-2026 idéMobi
+// www.idemobi.com
 
 #endregion
 
@@ -13,7 +11,7 @@ namespace DMBServerWebHelper
     ///     Defines the rendering parameters used to generate captcha images.
     /// </summary>
     /// <remarks>
-    ///     Instances are consumed by <see cref="CaptchaFactory"/> when rendering the distorted captcha
+    ///     Instances are consumed by <see cref="CaptchaFactory" /> when rendering the distorted captcha
     ///     text, noise points, and line noise into PNG image bytes.
     /// </remarks>
     [Serializable]

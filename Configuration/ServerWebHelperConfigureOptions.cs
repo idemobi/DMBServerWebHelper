@@ -1,9 +1,7 @@
 #region Copyright
 
-// Game-Data-Forge Solution
-// Written by CONTART Jean-François & BOULOGNE Quentin
-// DMBServerWebHelper.csproj ServerWebHelperConfigureOptions.cs create at 2026/04/07 21:04:27
-// ©2024-2026 idéMobi SARL FRANCE
+// ©2002-2026 idéMobi
+// www.idemobi.com
 
 #endregion
 
@@ -24,7 +22,7 @@ namespace DMBServerWebHelper
     /// </summary>
     /// <remarks>
     ///     The post-configuration composes the host web root file provider with a
-    ///     <see cref="ManifestEmbeddedFileProvider"/> rooted at the package <c>wwwroot</c> folder.
+    ///     <see cref="ManifestEmbeddedFileProvider" /> rooted at the package <c>wwwroot</c> folder.
     /// </remarks>
     public class ServerWebHelperConfigureOptions : IPostConfigureOptions<StaticFileOptions>
     {
@@ -44,7 +42,7 @@ namespace DMBServerWebHelper
         #region Instance constructors and destructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ServerWebHelperConfigureOptions"/> class.
+        ///     Initializes a new instance of the <see cref="ServerWebHelperConfigureOptions" /> class.
         /// </summary>
         /// <param name="sEnvironment">
         ///     The web host environment that provides the application web root file provider.
@@ -71,10 +69,10 @@ namespace DMBServerWebHelper
         /// </param>
         /// <remarks>
         ///     The method preserves an existing file provider when one is already configured and appends
-        ///     the package embedded file provider through a <see cref="CompositeFileProvider"/>.
+        ///     the package embedded file provider through a <see cref="CompositeFileProvider" />.
         /// </remarks>
         /// <exception cref="ArgumentNullException">
-        ///     Thrown when <paramref name="sName"/> or <paramref name="sOptions"/> is <see langword="null"/>.
+        ///     Thrown when <paramref name="sName" /> or <paramref name="sOptions" /> is <see langword="null" />.
         /// </exception>
         /// <exception cref="InvalidOperationException">
         ///     Thrown when neither the options nor the environment provide a file provider.

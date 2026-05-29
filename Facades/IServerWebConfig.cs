@@ -1,9 +1,7 @@
 #region Copyright
 
-// Game-Data-Forge Solution
-// Written by CONTART Jean-François & BOULOGNE Quentin
-// DMBServerWebHelper.csproj IServerWebConfig.cs create at 2026/04/07 21:04:27
-// ©2024-2026 idéMobi SARL FRANCE
+// ©2002-2026 idéMobi
+// www.idemobi.com
 
 #endregion
 
@@ -19,7 +17,7 @@ namespace DMBServerWebHelper
     ///     Defines the marker contract for server web helper configurations.
     /// </summary>
     /// <remarks>
-    ///     Implementations extend <see cref="IServerConfig"/> with ASP.NET Core web infrastructure
+    ///     Implementations extend <see cref="IServerConfig" /> with ASP.NET Core web infrastructure
     ///     behavior such as MVC, session, localization, cookies, and static asset configuration.
     /// </remarks>
     public interface IServerWebConfig : IServerConfig

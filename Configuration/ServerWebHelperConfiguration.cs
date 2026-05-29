@@ -1,9 +1,7 @@
 #region Copyright
 
-// Game-Data-Forge Solution
-// Written by CONTART Jean-François & BOULOGNE Quentin
-// DMBServerWebHelper.csproj ServerWebHelperConfiguration.cs create at 2026/04/07 21:04:27
-// ©2024-2026 idéMobi SARL FRANCE
+// ©2002-2026 idéMobi
+// www.idemobi.com
 
 #endregion
 
@@ -33,7 +31,7 @@ namespace DMBServerWebHelper
     /// <remarks>
     ///     The configuration registers MVC, session state, antiforgery, request localization,
     ///     embedded static assets, cookie definitions, validation localization, and the shared
-    ///     <see cref="WebLocalizer"/> resources used by server-side PageBuilder applications.
+    ///     <see cref="WebLocalizer" /> resources used by server-side PageBuilder applications.
     /// </remarks>
     [Serializable]
     public class ServerWebHelperConfiguration : WebGenericConfiguration<ServerWebHelperConfiguration>, IServerWebConfig
@@ -44,16 +42,16 @@ namespace DMBServerWebHelper
         ///     Defines the optional analytics consent cookie used by applications that enable analytics features.
         /// </summary>
         /// <remarks>
-        ///     The field is reserved for host applications and remains <see langword="null"/> until a host
+        ///     The field is reserved for host applications and remains <see langword="null" /> until a host
         ///     application assigns an analytics cookie definition.
         /// </remarks>
         public static CookieBool? CookieAnalytics;
 
         /// <summary>
-        ///     Defines the session consent cookie registered by <see cref="AfterConfiguration"/>.
+        ///     Defines the session consent cookie registered by <see cref="AfterConfiguration" />.
         /// </summary>
         /// <remarks>
-        ///     The value is <see langword="null"/> until <see cref="AfterConfiguration"/> registers the default
+        ///     The value is <see langword="null" /> until <see cref="AfterConfiguration" /> registers the default
         ///     consent cookie definition.
         /// </remarks>
         public static CookieBool? CookieConsent;
@@ -62,7 +60,7 @@ namespace DMBServerWebHelper
         ///     Defines the culture cookie used to remember the selected language for the web layout.
         /// </summary>
         /// <remarks>
-        ///     The value is <see langword="null"/> until <see cref="AfterConfiguration"/> registers the default
+        ///     The value is <see langword="null" /> until <see cref="AfterConfiguration" /> registers the default
         ///     culture cookie definition.
         /// </remarks>
         public static CookieString? CookieLanguage;
@@ -71,7 +69,7 @@ namespace DMBServerWebHelper
         ///     Defines the optional advertising consent cookie used by applications that enable advertising features.
         /// </summary>
         /// <remarks>
-        ///     The field is reserved for host applications and remains <see langword="null"/> until a host
+        ///     The field is reserved for host applications and remains <see langword="null" /> until a host
         ///     application assigns an advertising cookie definition.
         /// </remarks>
         public static CookieBool? CookiePub;
@@ -95,9 +93,9 @@ namespace DMBServerWebHelper
         ///     The web application whose request pipeline will receive the shared server helper middleware.
         /// </param>
         /// <remarks>
-        ///     This method increments <see cref="RequestCounter"/> for each request, delegates common
-        ///     server setup to <see cref="ServerHelperConfiguration.UseApp"/>, and then
-        ///     registers cookie policy, session, <see cref="SessionGuardMiddleware"/>, request localization,
+        ///     This method increments <see cref="RequestCounter" /> for each request, delegates common
+        ///     server setup to <see cref="ServerHelperConfiguration.UseApp" />, and then
+        ///     registers cookie policy, session, <see cref="SessionGuardMiddleware" />, request localization,
         ///     exception handling, and status code re-execution middleware.
         /// </remarks>
         public static void UseApp(WebApplication app)
@@ -133,7 +131,7 @@ namespace DMBServerWebHelper
         ///     Gets or sets the captcha rendering parameters used by the configured web application.
         /// </summary>
         /// <value>
-        ///     A <see cref="DMBServerWebHelper.CaptchaParameters"/> instance. The default value uses
+        ///     A <see cref="DMBServerWebHelper.CaptchaParameters" /> instance. The default value uses
         ///     the standard captcha rendering settings.
         /// </value>
         public CaptchaParameters CaptchaParameters { set; get; } = new CaptchaParameters();
@@ -271,7 +269,7 @@ namespace DMBServerWebHelper
         ///     Indicates whether this package contributes an API description endpoint.
         /// </summary>
         /// <returns>
-        ///     Always <see langword="false"/> because the package contributes web infrastructure rather
+        ///     Always <see langword="false" /> because the package contributes web infrastructure rather
         ///     than an application API description surface.
         /// </returns>
         public override bool ApiDescription()
@@ -302,7 +300,7 @@ namespace DMBServerWebHelper
         ///     Indicates whether this configuration requires a dedicated configuration file or app settings section.
         /// </summary>
         /// <returns>
-        ///     Always <see langword="false"/> because this package can operate with the shared server helper defaults.
+        ///     Always <see langword="false" /> because this package can operate with the shared server helper defaults.
         /// </returns>
         public override bool NeedsConfigFileOrAppSettings()
         {

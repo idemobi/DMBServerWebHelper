@@ -1,6 +1,17 @@
+#region Copyright
+
+// ©2002-2026 idéMobi
+// www.idemobi.com
+
+#endregion
+
+#region
+
 using System.Globalization;
 using DMBServerHelper;
 using Microsoft.AspNetCore.Http;
+
+#endregion
 
 namespace DMBServerWebHelper
 {
@@ -9,35 +20,20 @@ namespace DMBServerWebHelper
     /// </summary>
     public static class CountryWebTools
     {
-        /// <summary>
-        ///     Resolves the country code string for the current request.
-        /// </summary>
-        /// <param name="context">
-        ///     The HTTP context whose <c>Accept-Language</c> header is inspected, or <see langword="null"/>.
-        /// </param>
-        /// <returns>
-        ///     The resolved uppercase country code, or <c>None</c> when no country can be resolved.
-        /// </returns>
-        /// <remarks>
-        ///     This method currently delegates to <see cref="GetCountryCode"/>.
-        /// </remarks>
-        public static string GetCountryString(HttpContext? context)
-        {
-            return GetCountryCode(context);
-        }
+        #region Static methods
 
         /// <summary>
         ///     Resolves an uppercase country code from the request <c>Accept-Language</c> header.
         /// </summary>
         /// <param name="context">
-        ///     The HTTP context whose request headers are inspected, or <see langword="null"/>.
+        ///     The HTTP context whose request headers are inspected, or <see langword="null" />.
         /// </param>
         /// <returns>
         ///     The country portion of the first accepted culture, a default country for language-only cultures,
         ///     or <c>None</c> when the context or culture cannot be resolved.
         /// </returns>
         /// <remarks>
-        ///     When the header is empty, the method falls back to <see cref="ServerHelperConfiguration"/>
+        ///     When the header is empty, the method falls back to <see cref="ServerHelperConfiguration" />
         ///     base language, then to <c>en-US</c>. Invalid culture names return <c>None</c>.
         /// </remarks>
         public static string GetCountryCode(HttpContext? context)
@@ -67,6 +63,23 @@ namespace DMBServerWebHelper
             }
 
             return "None";
+        }
+
+        /// <summary>
+        ///     Resolves the country code string for the current request.
+        /// </summary>
+        /// <param name="context">
+        ///     The HTTP context whose <c>Accept-Language</c> header is inspected, or <see langword="null" />.
+        /// </param>
+        /// <returns>
+        ///     The resolved uppercase country code, or <c>None</c> when no country can be resolved.
+        /// </returns>
+        /// <remarks>
+        ///     This method currently delegates to <see cref="GetCountryCode" />.
+        /// </remarks>
+        public static string GetCountryString(HttpContext? context)
+        {
+            return GetCountryCode(context);
         }
 
         private static string GetDefaultCountryForLanguage(string lang)
@@ -126,5 +139,7 @@ namespace DMBServerWebHelper
                 _ => "US"
             };
         }
+
+        #endregion
     }
 }

@@ -1,9 +1,7 @@
 ﻿#region Copyright
 
-// Game-Data-Forge Solution
-// Written by CONTART Jean-François & BOULOGNE Quentin
-// DMBServerWebHelper.csproj LanguageTools.cs create at 2026/04/07 21:04:27
-// ©2024-2026 idéMobi SARL FRANCE
+// ©2002-2026 idéMobi
+// www.idemobi.com
 
 #endregion
 
@@ -33,11 +31,11 @@ namespace DMBServerWebHelper
         /// </param>
         /// <returns>
         ///     The resolved language or culture name. When no value is available, returns
-        ///     the <see cref="ServerWebHelperConfiguration.CookieLanguage"/> default value, or <c>en-US</c>
+        ///     the <see cref="ServerWebHelperConfiguration.CookieLanguage" /> default value, or <c>en-US</c>
         ///     when the language cookie has not been registered yet.
         /// </returns>
         /// <remarks>
-        ///     If ASP.NET Core has already resolved an <see cref="IRequestCultureFeature"/>, its UI culture
+        ///     If ASP.NET Core has already resolved an <see cref="IRequestCultureFeature" />, its UI culture
         ///     name is returned first. Cookie values using the ASP.NET request culture format are normalized
         ///     by returning the <c>c=</c> culture component.
         /// </remarks>

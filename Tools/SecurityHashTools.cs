@@ -1,5 +1,16 @@
+#region Copyright
+
+// ©2002-2026 idéMobi
+// www.idemobi.com
+
+#endregion
+
+#region
+
 using System.Security.Cryptography;
 using System.Text;
+
+#endregion
 
 namespace DMBServerWebHelper
 {
@@ -12,11 +23,13 @@ namespace DMBServerWebHelper
     /// </remarks>
     public static class SecurityHashTools
     {
+        #region Static methods
+
         /// <summary>
         ///     Generates a lowercase hexadecimal SHA-256 hash for a string value.
         /// </summary>
         /// <param name="value">
-        ///     The value to hash. A <see langword="null"/> value is treated as an empty string.
+        ///     The value to hash. A <see langword="null" /> value is treated as an empty string.
         /// </param>
         /// <returns>
         ///     The SHA-256 hash encoded as lowercase hexadecimal text.
@@ -39,5 +52,7 @@ namespace DMBServerWebHelper
 
             return sb.ToString();
         }
+
+        #endregion
     }
 }

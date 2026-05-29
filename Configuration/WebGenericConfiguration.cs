@@ -1,9 +1,7 @@
 #region Copyright
 
-// Game-Data-Forge Solution
-// Written by CONTART Jean-François & BOULOGNE Quentin
-// DMBServerWebHelper.csproj WebGenericConfiguration.cs create at 2026/04/07 21:04:27
-// ©2024-2026 idéMobi SARL FRANCE
+// ©2002-2026 idéMobi
+// www.idemobi.com
 
 #endregion
 
@@ -27,7 +25,7 @@ namespace DMBServerWebHelper
     ///     The concrete web configuration type managed by the generic configuration pipeline.
     /// </typeparam>
     /// <remarks>
-    ///     This base class extends <see cref="GenericConfiguration{T}"/> with web-specific debug
+    ///     This base class extends <see cref="GenericConfiguration{T}" /> with web-specific debug
     ///     loading and localization resource injection support.
     /// </remarks>
     public abstract class WebGenericConfiguration<T> : GenericConfiguration<T> where T : IServerWebConfig, new()
@@ -77,16 +75,16 @@ namespace DMBServerWebHelper
         ///     The host application builder whose service collection is used to resolve string localizers.
         /// </param>
         /// <param name="dataAnnotationClass">
-        ///     The resource marker type used for data annotation localization, or <see langword="null"/>
+        ///     The resource marker type used for data annotation localization, or <see langword="null" />
         ///     when no data annotation resource should be injected.
         /// </param>
         /// <param name="internalLocalizerClass">
-        ///     The resource marker type used for internal localization, or <see langword="null"/> when
+        ///     The resource marker type used for internal localization, or <see langword="null" /> when
         ///     no internal resource should be injected.
         /// </param>
         /// <remarks>
         ///     The method builds a temporary service provider to resolve <c>IStringLocalizer&lt;TResource&gt;</c>
-        ///     instances and registers them with <see cref="WebLocalizer"/> so MVC validation and internal
+        ///     instances and registers them with <see cref="WebLocalizer" /> so MVC validation and internal
         ///     package text can share the same localization infrastructure.
         /// </remarks>
         public void AddAnnotationLocalization(
