@@ -2,7 +2,7 @@
     <PropertyGroup>
         <RootNamespace>DMBServerWebHelper</RootNamespace>
         <Title>DMBServerWebHelper</Title>
-        <PackageTags>idemobi Server Web Helper</PackageTags>
+        <PackageTags>idemobi DMB PageBuilder ASPNETCore MVC Razor Web Middleware StaticAssets Controllers</PackageTags>
         <Description>ASP.NET Core web helper package for static assets, middleware, controllers, web facades, and request integration.</Description>
         <PackageReleaseNotes>note</PackageReleaseNotes>
         <PackageIcon>DMBServerWebHelper.png</PackageIcon>
