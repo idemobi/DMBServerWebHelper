@@ -13,7 +13,6 @@ using DMBServerWebHelper.Resources;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
@@ -180,7 +179,6 @@ namespace DMBServerWebHelper
 
                 sOptions.AllowSynchronousIO = true;
             });
-            appBuilder.Services.AddSingleton<IValidationAttributeAdapterProvider, CustomValidationAttributeAdapterProvider>();
             appBuilder.Services.AddControllersWithViews();
             appBuilder.Services.AddDistributedMemoryCache();
             appBuilder.Services.ConfigureApplicationCookie(options =>
