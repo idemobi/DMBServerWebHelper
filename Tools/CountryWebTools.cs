@@ -43,23 +43,35 @@ namespace DMBServerWebHelper
                 return "None";
             }
 
+            bool hasAcceptLanguageHeader = context.Request.Headers.ContainsKey("Accept-Language");
             string rawLang = context.Request.Headers["Accept-Language"].ToString();
-            string? firstLang = rawLang.Split(',', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
+            IReadOnlyList<string> acceptedLanguages = AcceptLanguageHeaderTools.GetAcceptedLanguages(rawLang);
 
-            if (string.IsNullOrEmpty(firstLang))
+            if (acceptedLanguages.Count == 0)
             {
-                firstLang = ServerHelperConfiguration.Config.BaseLanguage ?? "en-US";
+                if (hasAcceptLanguageHeader)
+                {
+                    return "None";
+                }
+
+                acceptedLanguages = [ServerHelperConfiguration.Config.BaseLanguage ?? "en-US"];
             }
 
-            try
+            foreach (string language in acceptedLanguages)
             {
-                CultureInfo culture = CultureInfo.GetCultureInfo(firstLang);
-                string[] parts = culture.Name.Split('-');
-                string countryCode = parts.Length > 1 ? parts[1] : GetDefaultCountryForLanguage(parts[0]);
-                return countryCode.ToUpperInvariant();
-            }
-            catch (CultureNotFoundException)
-            {
+                try
+                {
+                    CultureInfo culture = CultureInfo.GetCultureInfo(language);
+                    string[] parts = culture.Name.Split('-');
+                    string countryCode = parts.Length > 1 ? parts[1] : GetDefaultCountryForLanguage(parts[0]);
+                    if (CountryRegionInfoTools.TryParse(countryCode, out _))
+                    {
+                        return countryCode.ToUpperInvariant();
+                    }
+                }
+                catch (CultureNotFoundException)
+                {
+                }
             }
 
             return "None";

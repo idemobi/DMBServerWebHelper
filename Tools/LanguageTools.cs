@@ -55,7 +55,7 @@ namespace DMBServerWebHelper
             }
             else
             {
-                rawLang = httpContext.Request.Headers["Accept-Language"].ToString().Split(',').FirstOrDefault();
+                rawLang = AcceptLanguageHeaderTools.GetPreferredLanguage(httpContext.Request.Headers["Accept-Language"].ToString());
             }
 
             if (string.IsNullOrWhiteSpace(rawLang))
