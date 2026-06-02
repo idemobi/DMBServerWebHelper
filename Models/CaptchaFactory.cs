@@ -44,6 +44,8 @@ namespace DMBServerWebHelper
                 return (newX, newY);
             };
 
+        private static readonly Random KRandom = new();
+
         private static SKColor[] LinesColor { get; set; } =
         [
             SKColors.Red,
@@ -58,10 +60,9 @@ namespace DMBServerWebHelper
         private static Func<(int w, int h, double noisePointsPercent), IEnumerable<(int x, int y)>> NoisePointMapGenFunc { get; } =
             data =>
             {
-                Random random = new();
                 int noisePointCount = (int)(data.w * data.h * data.noisePointsPercent);
                 return Enumerable.Range(0, noisePointCount)
-                    .Select(_ => (random.Next(data.w), random.Next(data.h)))
+                    .Select(_ => (RandomNumberGenerator.GetInt32(data.w), RandomNumberGenerator.GetInt32(data.h)))
                     .ToArray();
             };
 
@@ -70,6 +71,15 @@ namespace DMBServerWebHelper
         #endregion
 
         #region Static methods
+
+        /// <summary>Returns a cryptographically secure random double in [0.0, 1.0).</summary>
+        private static double GetSecureDouble()
+        {
+            Span<byte> bytes = stackalloc byte[8];
+            RandomNumberGenerator.Fill(bytes);
+            ulong value = BitConverter.ToUInt64(bytes);
+            return (value >> 11) / (double)(1UL << 53);
+        }
 
         /// <summary>
         ///     Renders the captcha currently stored in the session as a PNG file stream result.
@@ -145,10 +155,8 @@ namespace DMBServerWebHelper
                     SKImageInfo imageInfoSurface = new(image2dX, image2dY, SKColorType.Bgra8888, SKAlphaType.Premul);
                     using SKSurface captchaSkSurface = SKSurface.Create(imageInfoSurface);
                     SKCanvas captchaCanvas = captchaSkSurface.Canvas;
-                    Random random = new();
-
-                    double distortionLevel = parameters.MinDistortion + (parameters.MaxDistortion - parameters.MinDistortion) * random.NextDouble();
-                    if (random.NextDouble() > 0.5)
+                    double distortionLevel = parameters.MinDistortion + (parameters.MaxDistortion - parameters.MinDistortion) * GetSecureDouble();
+                    if (RandomNumberGenerator.GetInt32(2) == 0)
                     {
                         distortionLevel *= -1;
                     }
@@ -174,8 +182,8 @@ namespace DMBServerWebHelper
                     for (int i = 0; i < LinesColor.Length; i++)
                     {
                         drawLineNoise.Color = LinesColor[i];
-                        drawLineNoise.StrokeWidth = random.Next(parameters.StrokeWidthMin, parameters.StrokeWidthMax);
-                        captchaCanvas.DrawLine(random.Next(0, image2dX), random.Next(0, image2dY), random.Next(0, image2dX), random.Next(0, image2dY), drawLineNoise);
+                        drawLineNoise.StrokeWidth = RandomNumberGenerator.GetInt32(parameters.StrokeWidthMin, parameters.StrokeWidthMax);
+                        captchaCanvas.DrawLine(RandomNumberGenerator.GetInt32(image2dX), RandomNumberGenerator.GetInt32(image2dY), RandomNumberGenerator.GetInt32(image2dX), RandomNumberGenerator.GetInt32(image2dY), drawLineNoise);
                     }
 
                     captchaCanvas.Flush();
@@ -221,7 +229,7 @@ namespace DMBServerWebHelper
 
             while (result.Length < length)
             {
-                result.Append(chars[RandomNumberGenerator.GetInt32(charLength)]);
+                result.Append(chars[KRandom.Next(0, charLength)]);
             }
 
             return result.ToString();
