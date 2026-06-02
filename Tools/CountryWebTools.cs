@@ -60,6 +60,7 @@ namespace DMBServerWebHelper
             }
             catch (CultureNotFoundException)
             {
+                // Invalid or unrecognised culture tag — fall through to "None" by design.
             }
 
             return "None";

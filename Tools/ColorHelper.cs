@@ -156,7 +156,7 @@ namespace DMBServerWebHelper
                 color = FromHex(hex);
                 return true;
             }
-            catch
+            catch (Exception ex) when (ex is ArgumentException or FormatException)
             {
                 color = default;
                 return false;
