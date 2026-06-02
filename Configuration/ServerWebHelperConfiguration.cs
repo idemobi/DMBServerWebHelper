@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -163,23 +162,13 @@ namespace DMBServerWebHelper
         ///     The resolved configuration root supplied by the generic configuration pipeline.
         /// </param>
         /// <remarks>
-        ///     This method configures Kestrel synchronous I/O, MVC, session state, antiforgery cookies,
-        ///     request localization, Razor view localization, data annotation localization, embedded static
-        ///     file options, and the default language and consent cookie definitions.
+        ///     This method configures MVC, session state, antiforgery cookies, request localization,
+        ///     Razor view localization, data annotation localization, embedded static file options,
+        ///     and the default language and consent cookie definitions.
         /// </remarks>
         public override void AfterConfiguration(IHostApplicationBuilder appBuilder, IConfigurationBuilder configBuilder, IConfigurationRoot configRoot)
         {
             appBuilder.Services.ConfigureOptions<ServerWebHelperConfigureOptions>();
-            appBuilder.Services.Configure<KestrelServerOptions>(sOptions =>
-            {
-                if (sOptions == null)
-                {
-                    throw new ArgumentNullException(nameof(sOptions));
-                }
-
-                sOptions.AllowSynchronousIO = true;
-            });
-            appBuilder.Services.AddControllersWithViews();
             appBuilder.Services.AddDistributedMemoryCache();
             appBuilder.Services.ConfigureApplicationCookie(options =>
             {
@@ -200,9 +189,6 @@ namespace DMBServerWebHelper
                 options.Cookie.IsEssential = true;
             });
 
-
-            appBuilder.Services.AddMvc();
-            appBuilder.Services.AddMvc().AddSessionStateTempDataProvider();
             appBuilder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             appBuilder.Services.AddAntiforgery(options =>
@@ -241,16 +227,15 @@ namespace DMBServerWebHelper
             });
 
             appBuilder.Services.AddLocalization();
-
-            appBuilder.Services.AddControllersWithViews().AddRazorOptions(options => { options.ViewLocationExpanders.Add(new WebLocalizedViewLocationExpander()); });
             WebLocalizer.DataAnnotationLocalizer = WebLocalizer.GetLocalizer<DMBServerWebHelperDataAnnotationLocalization>();
             WebLocalizer.InternalLocalizer = WebLocalizer.GetLocalizer<DMBServerWebHelperInternalLocalization>();
 
-            appBuilder.Services.AddMvc()
+            appBuilder.Services.AddControllersWithViews()
+                .AddSessionStateTempDataProvider()
+                .AddRazorOptions(options => { options.ViewLocationExpanders.Add(new WebLocalizedViewLocationExpander()); })
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization(options => { options.DataAnnotationLocalizerProvider = (type, factory) => WebLocalizer.DataAnnotationLocalizer; });
 
-            appBuilder.Services.ConfigureOptions<ServerWebHelperConfigureOptions>();
             // appBuilder.Services.AddHostedService<ServerWebHelperStartupService>();
 
             AddAnnotationLocalization(appBuilder,

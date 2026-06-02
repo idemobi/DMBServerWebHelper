@@ -43,12 +43,18 @@ namespace DMBServerWebHelper
                 return "None";
             }
 
+            bool hasAcceptLanguageHeader = context.Request.Headers.ContainsKey("Accept-Language");
             string rawLang = context.Request.Headers["Accept-Language"].ToString();
-            string? firstLang = rawLang.Split(',', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
+            IReadOnlyList<string> acceptedLanguages = AcceptLanguageHeaderTools.GetAcceptedLanguages(rawLang);
 
-            if (string.IsNullOrEmpty(firstLang))
+            if (acceptedLanguages.Count == 0)
             {
-                firstLang = ServerHelperConfiguration.Config.BaseLanguage ?? "en-US";
+                if (hasAcceptLanguageHeader)
+                {
+                    return "None";
+                }
+
+                acceptedLanguages = [ServerHelperConfiguration.Config.BaseLanguage ?? "en-US"];
             }
 
             try
@@ -60,7 +66,6 @@ namespace DMBServerWebHelper
             }
             catch (CultureNotFoundException)
             {
-                // Invalid or unrecognised culture tag — fall through to "None" by design.
             }
 
             return "None";

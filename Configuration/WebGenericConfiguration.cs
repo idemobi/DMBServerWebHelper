@@ -10,9 +10,10 @@
 using System.Text.Json.Serialization;
 using DMBServerHelper;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 
 #endregion
 
@@ -30,6 +31,14 @@ namespace DMBServerWebHelper
     /// </remarks>
     public abstract class WebGenericConfiguration<T> : GenericConfiguration<T> where T : IServerWebConfig, new()
     {
+        #region Static fields and properties
+
+        private static readonly IStringLocalizerFactory LocalizerFactory = new ResourceManagerStringLocalizerFactory(
+            Options.Create(new LocalizationOptions()),
+            NullLoggerFactory.Instance);
+
+        #endregion
+
         #region Static methods
 
         /// <summary>
@@ -72,7 +81,7 @@ namespace DMBServerWebHelper
         ///     Injects data annotation and internal localization resources into the shared web localizers.
         /// </summary>
         /// <param name="builder">
-        ///     The host application builder whose service collection is used to resolve string localizers.
+        ///     The host application builder associated with the configuration lifecycle.
         /// </param>
         /// <param name="dataAnnotationClass">
         ///     The resource marker type used for data annotation localization, or <see langword="null" />
@@ -83,9 +92,9 @@ namespace DMBServerWebHelper
         ///     no internal resource should be injected.
         /// </param>
         /// <remarks>
-        ///     The method builds a temporary service provider to resolve <c>IStringLocalizer&lt;TResource&gt;</c>
-        ///     instances and registers them with <see cref="WebLocalizer" /> so MVC validation and internal
-        ///     package text can share the same localization infrastructure.
+        ///     The method resolves resource localizers directly from the resource marker types and registers
+        ///     them with <see cref="WebLocalizer" /> so MVC validation and internal package text can share
+        ///     the same localization infrastructure without creating a temporary service provider.
         /// </remarks>
         public void AddAnnotationLocalization(
             IHostApplicationBuilder builder,
@@ -93,9 +102,9 @@ namespace DMBServerWebHelper
             Type? internalLocalizerClass
         )
         {
-            var serviceProvider = builder.Services.BuildServiceProvider();
+            ArgumentNullException.ThrowIfNull(builder);
 
-            static IStringLocalizer ResolveLocalizer(IServiceProvider sp, Type resourceType) => (IStringLocalizer)sp.GetRequiredService(typeof(IStringLocalizer<>).MakeGenericType(resourceType));
+            static IStringLocalizer ResolveLocalizer(Type resourceType) => LocalizerFactory.Create(resourceType);
 
             static ICombinedStringLocalizer CallGenericGetLocalizer(Type type)
             {
@@ -110,14 +119,14 @@ namespace DMBServerWebHelper
             if (dataAnnotationClass is not null)
                 WebLocalizer.DataAnnotationLocalizer.InjectResource(
                     dataAnnotationClass.Name,
-                    ResolveLocalizer(serviceProvider, dataAnnotationClass)
+                    ResolveLocalizer(dataAnnotationClass)
                 );
 
             // Global
             if (internalLocalizerClass is not null)
                 WebLocalizer.InternalLocalizer.InjectResource(
                     internalLocalizerClass.Name,
-                    ResolveLocalizer(serviceProvider, internalLocalizerClass)
+                    ResolveLocalizer(internalLocalizerClass)
                 );
 
             // Internal
@@ -126,7 +135,7 @@ namespace DMBServerWebHelper
                 var localizer = CallGenericGetLocalizer(internalLocalizerClass);
                 localizer.InjectResource(
                     internalLocalizerClass.Name,
-                    ResolveLocalizer(serviceProvider, internalLocalizerClass)
+                    ResolveLocalizer(internalLocalizerClass)
                 );
                 Localizer = localizer;
             }

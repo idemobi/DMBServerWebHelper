@@ -31,7 +31,7 @@ namespace DMBServerWebHelper
         #region Static fields and properties
 
         private static SKColor BackgroundColor { get; set; } = SKColors.Transparent;
-        private static readonly SessionString Captcha = new("Captcha", "Captcha", "Captcha", SessionDefinitionGroup.Invisible, "not defined");
+        private static readonly SessionString Captcha = new("Captcha", "Captcha", "Captcha", SessionDefinitionGroup.Invisible, string.Empty);
 
         private static Func<(int oldX, int oldY, double distortionLevel, int w, int h), (int newX, int newY)> DistortionFunc { get; } =
             oldPos =>
@@ -44,6 +44,7 @@ namespace DMBServerWebHelper
                 return (newX, newY);
             };
 
+        private static readonly Random KRandom = new();
 
         private static SKColor[] LinesColor { get; set; } =
         [
@@ -97,8 +98,8 @@ namespace DMBServerWebHelper
         /// </remarks>
         public static FileStreamResult GenerateCaptcha(HttpContext httpContext, CaptchaParameters? parameters = null)
         {
-            string? value = GetStoredCaptcha(httpContext);
-            byte[] image = GetCaptcha(value ?? "Error", parameters);
+            string value = TryGetStoredCaptcha(httpContext, out string storedCaptcha) ? storedCaptcha : "Error";
+            byte[] image = GetCaptcha(value, parameters);
             return new FileStreamResult(new MemoryStream(image), "image/png");
         }
 
@@ -228,7 +229,7 @@ namespace DMBServerWebHelper
 
             while (result.Length < length)
             {
-                result.Append(chars[RandomNumberGenerator.GetInt32(0, charLength)]);
+                result.Append(chars[KRandom.Next(0, charLength)]);
             }
 
             return result.ToString();
@@ -270,15 +271,33 @@ namespace DMBServerWebHelper
         ///     <see langword="true" /> when the provided text matches the stored captcha using an
         ///     ordinal case-insensitive comparison; otherwise, <see langword="false" />.
         /// </returns>
+        /// <remarks>
+        ///     A stored captcha is consumed after a validation attempt so the same value cannot be replayed.
+        /// </remarks>
         public static bool TestCaptcha(HttpContext httpContext, string captcha)
         {
-            string? stored = GetStoredCaptcha(httpContext);
-            if (stored == null)
+            if (!TryGetStoredCaptcha(httpContext, out string stored))
             {
                 return false;
             }
 
-            return string.Equals(captcha, stored, StringComparison.OrdinalIgnoreCase);
+            Captcha.DeleteFrom(httpContext);
+
+            return !string.IsNullOrWhiteSpace(captcha) &&
+                   string.Equals(captcha, stored, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool TryGetStoredCaptcha(HttpContext? httpContext, out string storedCaptcha)
+        {
+            storedCaptcha = string.Empty;
+
+            if (Captcha.Exists(httpContext) == false)
+            {
+                return false;
+            }
+
+            storedCaptcha = Captcha.GetValue(httpContext);
+            return string.IsNullOrWhiteSpace(storedCaptcha) == false;
         }
 
         #endregion
