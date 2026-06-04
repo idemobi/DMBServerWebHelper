@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <RootNamespace>DMBServerWebHelperWebsite</RootNamespace>
+        <TargetFramework>net10.0</TargetFramework>
+        <Description>Local ASP.NET Core host website for testing DMBServerWebHelper labs pages independently.</Description>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <EnableDefaultRazorGenerateItems>true</EnableDefaultRazorGenerateItems>
+        <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+        <IncludeRazorContentInPack>false</IncludeRazorContentInPack>
+        <EmbedRazorGenerateSources>false</EmbedRazorGenerateSources>
+        <Configurations>Debug;Release;NuGet</Configurations>
+        <Company>idéMobi</Company>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Labs\DMBServerWebHelperLabs.csproj" />
+        <ProjectReference Include="..\Source\DMBServerWebHelper.csproj" />
+        <PackageReference Include="DMBServerHelper" Version="0.13.0" />
+        <PackageReference Include="DMBPageBuilder" Version="0.13.0" />
+        <PackageReference Include="DMBBootstrapBuilder" Version="0.13.0" />
+        <PackageReference Include="DMBComponentBuilder" Version="0.13.0" />
+        <PackageReference Include="DMBEffectBuilder" Version="0.13.0" />
+    </ItemGroup>
+
+</Project>

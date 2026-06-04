@@ -132,6 +132,19 @@ Folder: `Labs`
 
 Use this folder for demo and documentation UI that targets `Source/DMBServerWebHelper.csproj`.
 
+## Website
+
+Folder: `Website`
+
+- `DMBServerWebHelperWebsite.csproj`: local ASP.NET Core host for testing Labs pages independently.
+- `Program.cs`: local website startup and route configuration.
+- `Providers`: local navbar provider that assembles Labs navigation fragments.
+- `Filters`: local MVC filter that injects the Labs sidebar and breadcrumb.
+- `Views/Shared/_Layout.cshtml`: minimal PageBuilder-compatible layout.
+- `wwwroot`: local favicon and logo assets copied from the labs host.
+
+Use this folder only for local manual preview and testing.
+
 ## Generated output
 
 Folders such as `bin` and `obj` are generated output and should not be edited manually.
