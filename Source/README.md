@@ -56,14 +56,14 @@ Documentation must be written so it can be consumed by developers and AI assista
 
 Use the local rule files:
 
-- [AGENTS.md](AGENTS.md)
-- [AI_CONTEXT.md](AI_CONTEXT.md)
-- [DOCUMENTATION_RULES.md](DOCUMENTATION_RULES.md)
-- [EXAMPLES_AND_TUTORIALS_RULES.md](EXAMPLES_AND_TUTORIALS_RULES.md)
-- [DRAWIO_DIAGRAM_RULES.md](DRAWIO_DIAGRAM_RULES.md)
-- [PROJECT_MAP.md](PROJECT_MAP.md)
-- [LOCALIZATION_NOMENCLATURE.md](LOCALIZATION_NOMENCLATURE.md)
-- [DELIVERY_CHECKLIST.md](DELIVERY_CHECKLIST.md)
+- [AGENTS.md](../AGENTS.md)
+- [AI_CONTEXT.md](../AI_CONTEXT.md)
+- [DOCUMENTATION_RULES.md](../DOCUMENTATION_RULES.md)
+- [EXAMPLES_AND_TUTORIALS_RULES.md](../EXAMPLES_AND_TUTORIALS_RULES.md)
+- [DRAWIO_DIAGRAM_RULES.md](../DRAWIO_DIAGRAM_RULES.md)
+- [PROJECT_MAP.md](../PROJECT_MAP.md)
+- [LOCALIZATION_NOMENCLATURE.md](../LOCALIZATION_NOMENCLATURE.md)
+- [DELIVERY_CHECKLIST.md](../DELIVERY_CHECKLIST.md)
 
 Documentation pages, examples, tutorials, and diagrams are published through `labs_idemobi_com` when applicable.
 

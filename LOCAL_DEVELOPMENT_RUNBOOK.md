@@ -18,7 +18,7 @@ When copying this file to another PageBuilder ecosystem project, update this sec
 
 Start by reading:
 
-- [README.md](README.md)
+- [README.md](Source/README.md)
 - [PROJECT_MAP.md](PROJECT_MAP.md)
 - [DOCUMENTATION_RULES.md](DOCUMENTATION_RULES.md)
 - [DELIVERY_CHECKLIST.md](DELIVERY_CHECKLIST.md)
@@ -74,9 +74,9 @@ When editing pages in `labs_idemobi_com`:
 Useful read-only commands:
 
 ```text
-rg "ServerWebHelperConfiguration" DMBServerWebHelper
-rg "CaptchaFactory" DMBServerWebHelper
-find DMBServerWebHelper -maxdepth 2 -type f | sort
+rg "ServerWebHelperConfiguration" DMBServerWebHelper/Source
+rg "CaptchaFactory" DMBServerWebHelper/Source
+find DMBServerWebHelper/Source -maxdepth 2 -type f | sort
 git diff -- DMBServerWebHelper
 ```
 

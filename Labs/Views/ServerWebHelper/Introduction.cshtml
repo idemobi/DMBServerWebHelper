@@ -1,0 +1,261 @@
+@using DMBBootstrapBuilder
+@using DMBComponentBuilder
+@using DMBEffectBuilder
+@using DMBPageBuilder
+@{
+    Layout = "_Layout";
+}
+
+@* ── Hero ── *@
+@using (Html.SectionBuilder().SetHeight(125, UnitSize.px).BootstrapBackgroundEffect(VariantStyle.Normal).Begin())
+{
+    @using (Html.FlexBlockBuilder().SetAlignItemsCenter().SetJustifyContentCenter().Begin())
+    {
+        @using (Html.BlockBuilder().AsTextCenter().Begin())
+        {
+            @Html.TitleBuilder().SetTitle("Introduction — DMBServerWebHelper", TitleLevel.One).Render()
+            @using (Html.PB_P().AsLead().Begin())
+            {
+                @:Web utilities for ASP.NET Core applications.
+            }
+            @using (Html.FlexBlockBuilder().SetJustifyContentCenter().WithGap(Old_Gap.Gap2).Begin())
+            {
+                @Html.Button(ActionItemFactory.AspRoute("ServerWebHelper", "GettingStarted").SetTitle("Get Started").SetIcon(IconStruct.Bootstrap("bi-play-fill")).SetVariant(VariantStyle.Primary)).Render()
+                @Html.Button(ActionItemFactory.AspRoute("ServerWebHelper", "Architecture").SetTitle("Architecture").SetIcon(IconStruct.Bootstrap("bi-diagram-3")).SetVariant(VariantStyle.Secondary).SetOutlined()).Render()
+            }
+        }
+    }
+}
+
+@* ── 3 highlight cards ── *@
+@using (Html.BlockBuilder().AsSectionContentTop().Begin())
+{
+    @using (Html.RowBuilder().AsPillarGrid().Begin())
+    {
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col4, ResponsiveBreakpoint.Md).Begin())
+        {
+            @using (Html.BlockBuilder().AsSidebarCard().Begin())
+            {
+                @using (Html.BlockBuilder().AsPaddedBlock().Begin())
+                {
+                    @using (Html.PB_Span().AddClass("bi bi-globe fs-2 text-primary d-block mb-2").Begin()) { }
+                    @using (Html.PB_Span().AsSemiBold().Begin())
+                    {
+                        @:Request Helpers
+                    }
+                    @using (Html.PB_P().AsSmallMuted().AsNoMargin().Begin())
+                    {
+                        @:Web-oriented utilities simplify common request, culture and language concerns.
+                    }
+                }
+            }
+        }
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col4, ResponsiveBreakpoint.Md).Begin())
+        {
+            @using (Html.BlockBuilder().AsSidebarCard().Begin())
+            {
+                @using (Html.BlockBuilder().AsPaddedBlock().Begin())
+                {
+                    @using (Html.PB_Span().AddClass("bi bi-shield-lock fs-2 text-success d-block mb-2").Begin()) { }
+                    @using (Html.PB_Span().AsSemiBold().Begin())
+                    {
+                        @:Security Helpers
+                    }
+                    @using (Html.PB_P().AsSmallMuted().AsNoMargin().Begin())
+                    {
+                        @:Captcha, hash and session guard features provide reusable web safety building blocks.
+                    }
+                }
+            }
+        }
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col4, ResponsiveBreakpoint.Md).Begin())
+        {
+            @using (Html.BlockBuilder().AsSidebarCard().Begin())
+            {
+                @using (Html.BlockBuilder().AsPaddedBlock().Begin())
+                {
+                    @using (Html.PB_Span().AddClass("bi bi-gear-wide-connected fs-2 text-warning d-block mb-2").Begin()) { }
+                    @using (Html.PB_Span().AsSemiBold().Begin())
+                    {
+                        @:Web Configuration
+                    }
+                    @using (Html.PB_P().AsSmallMuted().AsNoMargin().Begin())
+                    {
+                        @:Startup helpers make web-specific package setup explicit and consistent.
+                    }
+                }
+            }
+        }
+    }
+}
+
+@* ── What is + preview ── *@
+@using (Html.BlockBuilder().AsSectionContent().Begin())
+{
+    @using (Html.RowBuilder().SetGapY(Gap.G5).SetAlignItems(AlignItems.Center).Begin())
+    {
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col7, ResponsiveBreakpoint.Lg).Begin())
+        {
+            @Html.TitleBuilder().SetTitle("What is DMBServerWebHelper?", TitleLevel.Two).AsSectionHeading().Render()
+            @using (Html.PB_P().Begin())
+            {
+                @using (Html.PB_Span().AsBold().Begin())
+                {
+                    @:DMBServerWebHelper
+                }
+                @: adapts shared server conventions to ASP.NET Core web applications. It contains helpers for request handling, captcha, country and language data, security hashes, session guards and web-specific configuration.
+            }
+            @using (Html.BlockBuilder().AsBenefitRow().Begin())
+            {
+                @using (Html.PB_Span().AddClass("bi bi-check-circle-fill text-success me-3 mt-1").Begin()) { }
+                @using (Html.BlockBuilder().Begin())
+                {
+                    @:Belongs between the generic server layer and the visual rendering layer
+                }
+            }
+            @using (Html.BlockBuilder().AsBenefitRow().Begin())
+            {
+                @using (Html.PB_Span().AddClass("bi bi-check-circle-fill text-success me-3 mt-1").Begin()) { }
+                @using (Html.BlockBuilder().Begin())
+                {
+                    @:Prepares ASP.NET Core web concerns so
+                    @using (Html.PB_Span().AsMonospace().Begin())
+                    {
+                        @:DMBPageBuilder
+                    }
+                    @: can focus on rendering
+                }
+            }
+            @using (Html.BlockBuilder().AsBenefitRow().Begin())
+            {
+                @using (Html.PB_Span().AddClass("bi bi-check-circle-fill text-success me-3 mt-1").Begin()) { }
+                @using (Html.BlockBuilder().Begin())
+                {
+                    @:Two-call registration — one for services, one for middleware
+                }
+            }
+        }
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col5, ResponsiveBreakpoint.Lg).Begin())
+        {
+            @using (Html.BlockBuilder().AsSidebarCard().Begin())
+            {
+                @using (Html.BlockBuilder().AsPreviewWrapper().Begin())
+                {
+                    @(Html.CodeBlock(@"ServerWebHelperConfiguration.LoadCommonConfig(builder);
+
+WebApplication app = builder.Build();
+ServerWebHelperConfiguration.UseApp(app);", CodeLanguage.CSharp))
+                }
+                @using (Html.BlockBuilder().AsPaddedBlock().Begin())
+                {
+                    @using (Html.PB_P().AsSmallMuted().AsNoMargin().Begin())
+                    {
+                        @:Register web helpers at application startup.
+                    }
+                }
+            }
+        }
+    }
+}
+
+@* ── Three Pillars ── *@
+@using (Html.BlockBuilder().AsSectionContent().Begin())
+{
+    @using (Html.BlockBuilder().AsTextCenter().Begin())
+    {
+        @Html.TitleBuilder().SetTitle("Three Pillars of DMBServerWebHelper", TitleLevel.Two).AsSectionHeading().Render()
+        @using (Html.PB_P().AsMuted().Begin())
+        {
+            @:Each pillar targets a different web-facing concern.
+        }
+    }
+    @using (Html.RowBuilder().AsPillarGrid().Begin())
+    {
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col4, ResponsiveBreakpoint.Md).Begin())
+        {
+            @using (Html.BlockBuilder().AsPillarCard().Begin())
+            {
+                @using (Html.BlockBuilder().AsTopMargin().Begin())
+                {
+                    @using (Html.PB_Span().AddClass("bi bi-globe text-primary me-1").Begin()) { }
+                    @Html.TitleBuilder().SetTitle("Request Helpers", TitleLevel.Five).AsCompact().Render()
+                }
+                @using (Html.PB_P().AsSmallMuted().Begin())
+                {
+                    @:Web-oriented utilities simplify common request, culture and language concerns.
+                }
+            }
+        }
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col4, ResponsiveBreakpoint.Md).Begin())
+        {
+            @using (Html.BlockBuilder().AsPillarCard().Begin())
+            {
+                @using (Html.BlockBuilder().AsTopMargin().Begin())
+                {
+                    @using (Html.PB_Span().AddClass("bi bi-shield-lock text-success me-1").Begin()) { }
+                    @Html.TitleBuilder().SetTitle("Security Helpers", TitleLevel.Five).AsCompact().Render()
+                }
+                @using (Html.PB_P().AsSmallMuted().Begin())
+                {
+                    @:Captcha, hash and session guard features provide reusable web safety building blocks.
+                }
+            }
+        }
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col4, ResponsiveBreakpoint.Md).Begin())
+        {
+            @using (Html.BlockBuilder().AsPillarCard().Begin())
+            {
+                @using (Html.BlockBuilder().AsTopMargin().Begin())
+                {
+                    @using (Html.PB_Span().AddClass("bi bi-gear-wide-connected text-warning me-1").Begin()) { }
+                    @Html.TitleBuilder().SetTitle("Web Configuration", TitleLevel.Five).AsCompact().Render()
+                }
+                @using (Html.PB_P().AsSmallMuted().Begin())
+                {
+                    @:Startup helpers make web-specific package setup explicit and consistent.
+                }
+            }
+        }
+    }
+}
+
+@* ── Philosophy ── *@
+@using (Html.BlockBuilder().AsSectionContent().Begin())
+{
+    @using (Html.FlexBlockBuilder().WithGap(Old_Gap.Gap3).SetAlignItemsStretch().Begin())
+    {
+        @using (Html.BlockBuilder().AsInfoCallout().SetStyle("margin", "0").SetStyle("flex", "2").Begin())
+        {
+            @using (Html.FlexBlockBuilder().Begin())
+            {
+                @using (Html.BlockBuilder().AsCalloutIcon().Begin())
+                {
+                    @using (Html.PB_Span().AddClass("bi bi-lightbulb-fill fs-2 text-info").Begin()) { }
+                }
+                @using (Html.BlockBuilder().Begin())
+                {
+                    @Html.TitleBuilder().SetTitle("Role in the stack", TitleLevel.Four).AsAlertHeading().Render()
+                    @using (Html.PB_P().AsNoMargin().Begin())
+                    {
+                        @:DMBServerWebHelper belongs between the generic server layer and the visual rendering layer. It prepares ASP.NET Core web concerns so page and component builders can focus on rendering.
+                    }
+                }
+            }
+        }
+        @using (Html.BlockBuilder().AsSidebarCard().SetStyle("flex", "1").Begin())
+        {
+            @using (Html.BlockBuilder().AsPaddedBlock().SetStyle("height", "100%").Begin())
+            {
+                @using (Html.FlexBlockBuilder().SetFlexColumn().SetAlignItemsStart().SetJustifyContentCenter().SetStyle("height", "100%").Begin())
+                {
+                    @Html.TitleBuilder().SetTitle("Next Step", TitleLevel.Five).Render()
+                    @using (Html.PB_P().AsSmallMuted().Begin())
+                    {
+                        @:Learn how to register web helpers in your project.
+                    }
+                    @Html.Button(ActionItemFactory.AspRoute("ServerWebHelper", "GettingStarted").SetTitle("Getting Started").SetIcon(IconStruct.Bootstrap("bi-play-fill")).SetVariant(VariantStyle.Primary)).Render()
+                }
+            }
+        }
+    }
+}

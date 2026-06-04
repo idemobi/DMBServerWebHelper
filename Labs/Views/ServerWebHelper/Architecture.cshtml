@@ -1,0 +1,143 @@
+@using DMBBootstrapBuilder
+@using DMBComponentBuilder
+@using DMBEffectBuilder
+@using DMBPageBuilder
+@{
+    Layout = "_Layout";
+}
+
+@* ── Hero ── *@
+@using (Html.SectionBuilder().SetHeight(125, UnitSize.px).BootstrapBackgroundEffect(VariantStyle.Normal).Begin())
+{
+    @using (Html.FlexBlockBuilder().SetAlignItemsCenter().SetJustifyContentCenter().Begin())
+    {
+        @using (Html.BlockBuilder().AsTextCenter().Begin())
+        {
+            @Html.TitleBuilder().SetTitle("Architecture — DMBServerWebHelper", TitleLevel.One).Render()
+            @using (Html.PB_P().AsLead().Begin())
+            {
+                @:A web adaptation layer above DMBServerHelper.
+            }
+        }
+    }
+}
+
+@using (Html.ContainerBuilder().SetPadding(SpacingSide.Y, SpacingSize.Five).Begin())
+{
+    @using (Html.RowBuilder().Begin())
+    {
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).Begin())
+        {
+            @* ── 1. Configuration layer ── *@
+            @Html.TitleBuilder().SetTitle("1. Configuration layer", TitleLevel.Two).AsSectionHeading().Render()
+            @using (Html.PB_P().Begin())
+            {
+                @:Web configuration objects register request-specific services and application middleware hooks.
+                @: The two-phase registration — services then middleware — keeps startup order explicit.
+            }
+            @(Html.CodeBlock("ServerWebHelperConfiguration.LoadCommonConfig(builder);\n\nWebApplication app = builder.Build();\nServerWebHelperConfiguration.UseApp(app);", CodeLanguage.CSharp)
+                .SetTitle("Two-phase registration")
+                .SetCopyButton())
+
+            @* ── 2. Request layer ── *@
+            @Html.TitleBuilder().SetTitle("2. Request layer", TitleLevel.Two).AsSubSectionHeading().Render()
+            @using (Html.PB_P().Begin())
+            {
+                @:Request counters, language tools and country helpers support common web-facing data flows.
+                @: These helpers build on the
+                @using (Html.PB_Span().AsMonospace().Begin())
+                {
+                    @:IHttpContextAccessor
+                }
+                @: registered by the configuration layer.
+            }
+
+            @* ── 3. Security layer ── *@
+            @Html.TitleBuilder().SetTitle("3. Security layer", TitleLevel.Two).AsSubSectionHeading().Render()
+            @using (Html.PB_P().Begin())
+            {
+                @:Captcha, security hashes and session guards provide reusable protections for interactive pages.
+                @: They depend on the shared server conventions from
+                @using (Html.PB_Span().AsMonospace().Begin())
+                {
+                    @:DMBServerHelper
+                }
+                @: and extend them for web scenarios.
+            }
+
+            @* ── Boundary ── *@
+            @Html.TitleBuilder().SetTitle("Boundary", TitleLevel.Two).AsSubSectionHeading().Render()
+            @using (Html.PB_P().Begin())
+            {
+                @:This package should own web concerns, not page composition. Rendering remains the responsibility of
+                @using (Html.PB_Span().AsMonospace().Begin())
+                {
+                    @:DMBPageBuilder
+                }
+                @: and the visual builder packages above it.
+            }
+
+            @* ── Tech Stack ── *@
+            @using (Html.BlockBuilder().AsInfoCallout().Begin())
+            {
+                @using (Html.FlexBlockBuilder().Begin())
+                {
+                    @using (Html.BlockBuilder().AsCalloutIcon().Begin())
+                    {
+                        @using (Html.PB_Span().AddClass("bi bi-gear-fill fs-2 text-info").Begin()) { }
+                    }
+                    @using (Html.BlockBuilder().Begin())
+                    {
+                        @Html.TitleBuilder().SetTitle("Tech Stack", TitleLevel.Five).AsAlertHeading().Render()
+                        @using (Html.BlockBuilder().AsSidebarRow().Begin())
+                        {
+                            @using (Html.PB_Span().AsBold().Begin())
+                            {
+                                @:Backend:
+                            }
+                            @: .NET 10 / ASP.NET Core
+                        }
+                        @using (Html.BlockBuilder().AsSidebarRow().Begin())
+                        {
+                            @using (Html.PB_Span().AsBold().Begin())
+                            {
+                                @:Role:
+                            }
+                            @: Web adaptation layer
+                        }
+                        @using (Html.BlockBuilder().AsSidebarRow().Begin())
+                        {
+                            @using (Html.PB_Span().AsBold().Begin())
+                            {
+                                @:Architecture:
+                            }
+                            @: Middleware / Helpers
+                        }
+                        @using (Html.BlockBuilder().AsSidebarRow().Begin())
+                        {
+                            @using (Html.PB_Span().AsBold().Begin())
+                            {
+                                @:Integration:
+                            }
+                            @: Above DMBServerHelper
+                        }
+                    }
+                }
+            }
+
+            @* ── Next Step ── *@
+            @using (Html.BlockBuilder().AsSidebarNote().Begin())
+            {
+                @using (Html.BlockBuilder().AsTextCenter().Begin())
+                {
+                    @Html.TitleBuilder().SetTitle("Go back to the introduction", TitleLevel.Four).Render()
+                    @using (Html.PB_P().AsSmallMuted().Begin())
+                    {
+                        @:Review the complete overview of DMBServerWebHelper and its role in the stack.
+                    }
+                    @Html.Button(ActionItemFactory.AspRoute("ServerWebHelper", "Introduction").SetTitle("Introduction").SetIcon(IconStruct.Bootstrap("bi-house")).SetVariant(VariantStyle.Primary)).Render()
+                }
+            }
+        }
+    }
+}

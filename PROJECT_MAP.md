@@ -16,8 +16,6 @@ When copying this file to another PageBuilder ecosystem project, update this sec
 
 ## Root files
 
-- `DMBServerWebHelper.csproj`: project file and package metadata.
-- `README.md`: package overview and documentation entry point.
 - `AGENTS.md`: local AI instructions.
 - `AI_CONTEXT.md`: project context for AI assistants.
 - `DOCUMENTATION_RULES.md`: XML and reference documentation rules.
@@ -29,11 +27,19 @@ When copying this file to another PageBuilder ecosystem project, update this sec
 - `LOCAL_DEVELOPMENT_RUNBOOK.md`: local workflow guide.
 - `TROUBLESHOOTING.md`: common issue guide.
 - `GLOSSARY.md`: common term definitions.
-- `RequestCounter.cs`: lightweight request count utility.
+
+## Source files
+
+- `Source/DMBServerWebHelper.csproj`: project file and package metadata.
+- `Source/README.md`: package overview and documentation entry point.
+- `Source/LICENSE.md`: package license file.
+- `Source/DMBServerWebHelper.png`: package icon.
+- `Source/DMBServerWebHelper.snk`: assembly signing key.
+- `Source/RequestCounter.cs`: lightweight request count utility.
 
 ## Configuration
 
-Folder: `Configuration`
+Folder: `Source/Configuration`
 
 - `ServerWebHelperConfiguration.cs`: central ASP.NET Core service and middleware configuration helper.
 - `ServerWebHelperConfigureOptions.cs`: static file options configuration for embedded package assets.
@@ -43,7 +49,7 @@ Use this folder for shared web application setup behavior.
 
 ## Controllers
 
-Folder: `Controllers`
+Folder: `Source/Controllers`
 
 - `RawWebController.cs`: base MVC controller for shared web infrastructure conventions.
 
@@ -51,7 +57,7 @@ Use this folder only for reusable controller base types or controller-level infr
 
 ## Facades
 
-Folder: `Facades`
+Folder: `Source/Facades`
 
 - `IServerWebConfig.cs`: web configuration facade contract extending server configuration behavior.
 
@@ -59,7 +65,7 @@ Use this folder for public abstraction contracts.
 
 ## Middlewares
 
-Folder: `Middlewares`
+Folder: `Source/Middlewares`
 
 - `SessionGuardMiddleware.cs`: session-loading middleware.
 - `SessionGuardExtensions.cs`: extension method for registering the session guard in the request pipeline.
@@ -68,7 +74,7 @@ Use this folder for ASP.NET Core middleware and registration helpers.
 
 ## Models
 
-Folder: `Models`
+Folder: `Source/Models`
 
 - `CaptchaFactory.cs`: captcha image generation and validation helper.
 - `CaptchaParameters.cs`: captcha rendering and behavior parameters.
@@ -77,7 +83,7 @@ Use this folder for state/configuration models and focused feature helpers that 
 
 ## Resources
 
-Folder: `Resources`
+Folder: `Source/Resources`
 
 - `DMBServerWebHelperInternalLocalization.Designer.cs`: generated internal localization accessors.
 - `DMBServerWebHelperDataAnnotationLocalization.Designer.cs`: generated data annotation localization accessors.
@@ -86,7 +92,7 @@ Do not edit generated designer files manually unless the generation workflow req
 
 ## Tools
 
-Folder: `Tools`
+Folder: `Source/Tools`
 
 - `LanguageTools.cs`: language resolution helpers.
 - `CountryWebTools.cs`: country code resolution helpers from web request signals.
@@ -98,13 +104,33 @@ Use this folder for small, deterministic utility APIs.
 
 ## Static assets
 
-Folder: `wwwroot`
+Folder: `Source/wwwroot`
 
 - `css`: embedded CSS assets.
 - `fonts`: embedded font assets.
 - `js`: embedded JavaScript assets.
 
 Static assets are exposed through ASP.NET Core static file provider composition.
+
+## Unit tests
+
+Folder: `UnitTests`
+
+- `DMBServerWebHelperUnitTest.csproj`: unit test project for the module.
+- `Helpers`: test-only helpers for ASP.NET Core hosting and session scenarios.
+
+Use this folder for tests that target `Source/DMBServerWebHelper.csproj`.
+
+## Labs
+
+Folder: `Labs`
+
+- `DMBServerWebHelperLabs.csproj`: Razor, non-packable lab project for presentation and example pages hosted by `labs_idemobi_com`.
+- `Controllers`: MVC controllers that expose the lab routes.
+- `Views`: Razor pages for the lab presentation and examples.
+- `Helpers`: lab-only view extensions copied or recreated without depending on `labs_idemobi_com`.
+
+Use this folder for demo and documentation UI that targets `Source/DMBServerWebHelper.csproj`.
 
 ## Generated output
 

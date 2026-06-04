@@ -5,6 +5,8 @@
 
 #endregion
 
+using System.Threading;
+
 namespace DMBServerWebHelper
 {
     /// <summary>

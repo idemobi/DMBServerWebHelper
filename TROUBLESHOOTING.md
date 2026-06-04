@@ -62,7 +62,7 @@ Check:
 
 Check:
 
-- assets exist under `wwwroot`,
+- assets exist under `Source/wwwroot`,
 - assets are embedded by the project configuration,
 - `ServerWebHelperConfigureOptions` is applied,
 - the composite file provider preserves the host application's existing static file provider,

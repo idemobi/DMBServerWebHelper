@@ -1,0 +1,343 @@
+﻿@using DMBBootstrapBuilder
+@using DMBComponentBuilder
+@using DMBEffectBuilder
+@using DMBPageBuilder
+@using DMBServerHelper
+@using DMBServerWebHelper
+@using Microsoft.AspNetCore.Http
+@{
+    Layout = "_Layout";
+
+    string currentAcceptLanguage = Context.Request.Headers["Accept-Language"].ToString();
+    string currentLanguage = LanguageTools.ResolveLanguage(Context);
+    string currentCountry = CountryWebTools.GetCountryCode(Context);
+    string? languageCookieName = ServerWebHelperConfiguration.CookieLanguage?.Name;
+    string? languageCookieDefault = ServerWebHelperConfiguration.CookieLanguage?.DefaultValue;
+    string languageCookieScript = ServerWebHelperConfiguration.CookieLanguage?.GenerateOnClick("fr-FR") ?? "CookieLanguage is not registered.";
+    string validationText = WebLocalizer.GetDataAnnotation("FormBuilder_Field_Required").Value;
+    string sampleText = WebLocalizer.GetInternal("LABS_SAMPLE_KEY").Value;
+
+    var languageExamples = new[]
+    {
+        "fr-CA,fr;q=0.9",
+        "fr-CA;q=0.4,en-US;q=0.9,fr;q=0.8",
+        "fr-FR;q=0,en-GB;q=0.7",
+        "zz-ZZ;q=1,fr-FR;q=0.8",
+        "fr-FR;q=broken"
+    }
+        .Select(header =>
+        {
+            DefaultHttpContext sampleContext = new DefaultHttpContext();
+            sampleContext.Request.Headers["Accept-Language"] = header;
+
+            return new
+            {
+                Header = header,
+                Language = LanguageTools.ResolveLanguage(sampleContext),
+                Country = CountryWebTools.GetCountryCode(sampleContext)
+            };
+        })
+        .ToArray();
+}
+
+@using (Html.SectionBuilder().SetHeight(150, UnitSize.px).BootstrapBackgroundEffect(VariantStyle.Normal).Begin())
+{
+    @using (Html.FlexBlockBuilder().SetAlignItemsCenter().SetJustifyContentCenter().Begin())
+    {
+        @using (Html.BlockBuilder().AsTextCenter().Begin())
+        {
+            @Html.TitleBuilder().SetTitle("Examples - DMBServerWebHelper", TitleLevel.One).Render()
+            @using (Html.PB_P().AsLead().Begin())
+            {
+                @:Request language, country detection, localization, language cookies, and session guard.
+            }
+            @using (Html.FlexBlockBuilder().SetJustifyContentCenter().WithGap(Old_Gap.Gap2).Begin())
+            {
+                @Html.Button(ActionItemFactory.AspRoute("ServerWebHelper", "Introduction").SetTitle("Introduction").SetIcon(IconStruct.Bootstrap("bi-house")).SetVariant(VariantStyle.Secondary).SetOutlined()).Render()
+                @Html.Button(ActionItemFactory.AspRoute("ServerWebHelper", "Architecture").SetTitle("Architecture").SetIcon(IconStruct.Bootstrap("bi-diagram-3")).SetVariant(VariantStyle.Primary).SetOutlined()).Render()
+            }
+        }
+    }
+}
+
+@using (Html.BlockBuilder().AsSectionContentTop().Begin())
+{
+    @using (Html.RowBuilder().AsPillarGrid().Begin())
+    {
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col4, ResponsiveBreakpoint.Md).Begin())
+        {
+            @using (Html.BlockBuilder().AsSidebarCard().Begin())
+            {
+                @using (Html.BlockBuilder().AsPaddedBlock().Begin())
+                {
+                    @using (Html.PB_Span().AddClass("bi bi-translate fs-2 text-primary d-block mb-2").Begin()) { }
+                    @using (Html.PB_Span().AsSemiBold().Begin())
+                    {
+                        @:Language
+                    }
+                    @using (Html.PB_P().AsSmallMuted().AsNoMargin().Begin())
+                    {
+                        @:Accept-Language is parsed with quality sorting and malformed values are ignored.
+                    }
+                }
+            }
+        }
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col4, ResponsiveBreakpoint.Md).Begin())
+        {
+            @using (Html.BlockBuilder().AsSidebarCard().Begin())
+            {
+                @using (Html.BlockBuilder().AsPaddedBlock().Begin())
+                {
+                    @using (Html.PB_Span().AddClass("bi bi-flag fs-2 text-success d-block mb-2").Begin()) { }
+                    @using (Html.PB_Span().AsSemiBold().Begin())
+                    {
+                        @:Country
+                    }
+                    @using (Html.PB_P().AsSmallMuted().AsNoMargin().Begin())
+                    {
+                        @:CountryWebTools extracts a valid region while rejecting unknown culture regions.
+                    }
+                }
+            }
+        }
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col4, ResponsiveBreakpoint.Md).Begin())
+        {
+            @using (Html.BlockBuilder().AsSidebarCard().Begin())
+            {
+                @using (Html.BlockBuilder().AsPaddedBlock().Begin())
+                {
+                    @using (Html.PB_Span().AddClass("bi bi-shield-lock fs-2 text-warning d-block mb-2").Begin()) { }
+                    @using (Html.PB_Span().AsSemiBold().Begin())
+                    {
+                        @:Session guard
+                    }
+                    @using (Html.PB_P().AsSmallMuted().AsNoMargin().Begin())
+                    {
+                        @:Middleware order keeps session-backed helpers available before downstream rendering.
+                    }
+                }
+            }
+        }
+    }
+}
+
+@using (Html.BlockBuilder().AsSectionContent().Begin())
+{
+    @Html.TitleBuilder().SetTitle("Current Request Signals", TitleLevel.Two).AsSectionHeading().Render()
+    @using (Html.RowBuilder().SetGapY(Gap.G4).Begin())
+    {
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col6, ResponsiveBreakpoint.Lg).Begin())
+        {
+            @using (Html.CardBuilder().SetTitle("Accept-Language", TitleLevel.Three).SetIconBootstrap("bi-card-text").Begin())
+            {
+                @using (Html.PB_P().AsSmallMuted().AddClass("mb-2").Begin()) {
+                    @:Raw request header 
+                }
+                @using (Html.PB_Span().AsMonospace().AddClass("d-block text-break").Begin()) { @(string.IsNullOrWhiteSpace(currentAcceptLanguage) ? "(missing)" : currentAcceptLanguage) }
+            }
+        }
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col6, ResponsiveBreakpoint.Lg).Begin())
+        {
+            @using (Html.CardBuilder().SetTitle("Resolved values", TitleLevel.Three).SetIconBootstrap("bi-compass").Begin())
+            {
+                @using (Html.TableBuilder().SetSmall().Begin())
+                {
+                    @using (Html.TableBodyBuilder().Begin())
+                    {
+                        @using (Html.TableRowBuilder().Begin())
+                        {
+                            @using (Html.TableCellBuilder(isHeader: true).Begin()) {
+                    @:Language 
+                }
+                            @using (Html.TableCellBuilder().Begin()) { @using (Html.PB_Span().AsMonospace().Begin()) { @currentLanguage } }
+                        }
+                        @using (Html.TableRowBuilder().Begin())
+                        {
+                            @using (Html.TableCellBuilder(isHeader: true).Begin()) {
+                    @:Country 
+                }
+                            @using (Html.TableCellBuilder().Begin()) { @using (Html.PB_Span().AsMonospace().Begin()) { @currentCountry } }
+                        }
+                        @using (Html.TableRowBuilder().Begin())
+                        {
+                            @using (Html.TableCellBuilder(isHeader: true).Begin()) {
+                    @:Request count 
+                }
+                            @using (Html.TableCellBuilder().Begin()) { @using (Html.PB_Span().AsMonospace().Begin()) { @RequestCounter.Total } }
+                        }
+                    }
+                }
+            }
+        }
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).Begin())
+        {
+            @using (Html.CardBuilder().SetTitle("Request code", TitleLevel.Three).SetIconBootstrap("bi-code-square").Begin())
+            {
+                @(Html.CodeBlock(@"string language = LanguageTools.ResolveLanguage(HttpContext);
+string country = CountryWebTools.GetCountryCode(HttpContext);
+long requests = RequestCounter.Total;", CodeLanguage.CSharp)
+                    .SetTitle("Read request signals")
+                    .SetCopyButton()
+                    .SetCompact())
+            }
+        }
+    }
+}
+
+@using (Html.BlockBuilder().AsSectionContent().Begin())
+{
+    @Html.TitleBuilder().SetTitle("Accept-Language Test Matrix", TitleLevel.Two).AsSectionHeading().Render()
+    @using (Html.PB_P().AsMuted().Begin())
+    {
+        @:The matrix shows quality sorting, rejected zero-quality values, invalid-region fallback, and malformed quality handling.
+    }
+
+    @using (Html.CardBuilder().SetTitle("Header parsing examples", TitleLevel.Three).SetIconBootstrap("bi-list-check").Begin())
+    {
+        @using (Html.TableBuilder().SetSmall().SetResponsive(TableResponsiveBreakpoint.Always).Begin())
+        {
+            @using (Html.TableHeaderBuilder().Begin())
+            {
+                @using (Html.TableRowBuilder().Begin())
+                {
+                    @using (Html.TableCellBuilder(isHeader: true).Begin()) {
+                    @:Header 
+                }
+                    @using (Html.TableCellBuilder(isHeader: true).Begin()) {
+                    @:LanguageTools 
+                }
+                    @using (Html.TableCellBuilder(isHeader: true).Begin()) {
+                    @:CountryWebTools 
+                }
+                }
+            }
+            @using (Html.TableBodyBuilder().Begin())
+            {
+                @foreach (var row in languageExamples)
+                {
+                    @using (Html.TableRowBuilder().Begin())
+                    {
+                        @using (Html.TableCellBuilder().Begin()) { @using (Html.PB_Span().AsMonospace().Begin()) { @row.Header } }
+                        @using (Html.TableCellBuilder().Begin()) { @using (Html.PB_Span().AsMonospace().Begin()) { @row.Language } }
+                        @using (Html.TableCellBuilder().Begin()) { @using (Html.PB_Span().AsMonospace().Begin()) { @row.Country } }
+                    }
+                }
+            }
+        }
+    }
+
+    @using (Html.BlockBuilder().AsTopMargin().Begin())
+    {
+        @using (Html.CardBuilder().SetTitle("Language resolution code", TitleLevel.Three).SetIconBootstrap("bi-code-square").Begin())
+        {
+            @(Html.CodeBlock(@"DefaultHttpContext sampleContext = new DefaultHttpContext();
+sampleContext.Request.Headers[""Accept-Language""] = ""fr-CA;q=0.4,en-US;q=0.9,fr;q=0.8"";
+
+string language = LanguageTools.ResolveLanguage(sampleContext);
+string country = CountryWebTools.GetCountryCode(sampleContext);", CodeLanguage.CSharp)
+                .SetTitle("Test language resolution")
+                .SetCopyButton()
+                .SetCompact())
+        }
+    }
+}
+
+@using (Html.BlockBuilder().AsSectionContent().Begin())
+{
+    @Html.TitleBuilder().SetTitle("Language Cookie", TitleLevel.Two).AsSectionHeading().Render()
+    @using (Html.RowBuilder().SetGapY(Gap.G4).Begin())
+    {
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col4, ResponsiveBreakpoint.Lg).Begin())
+        {
+            @using (Html.CardBuilder().SetTitle("Cookie name", TitleLevel.Three).SetIconBootstrap("bi-tag").Begin())
+            {
+                @using (Html.PB_Span().AsMonospace().AddClass("text-break").Begin()) { @(languageCookieName ?? "(not registered)") }
+            }
+        }
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col4, ResponsiveBreakpoint.Lg).Begin())
+        {
+            @using (Html.CardBuilder().SetTitle("Default value", TitleLevel.Three).SetIconBootstrap("bi-translate").Begin())
+            {
+                @using (Html.PB_Span().AsMonospace().AddClass("text-break").Begin()) { @(languageCookieDefault ?? "(not registered)") }
+            }
+        }
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col4, ResponsiveBreakpoint.Lg).Begin())
+        {
+            @using (Html.CardBuilder().SetTitle("Generated JavaScript", TitleLevel.Three).SetIconBootstrap("bi-terminal").Begin())
+            {
+                @using (Html.PB_Span().AsMonospace().AddClass("d-block text-break").Begin()) { @languageCookieScript }
+            }
+        }
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).Begin())
+        {
+            @using (Html.CardBuilder().SetTitle("Cookie code", TitleLevel.Three).SetIconBootstrap("bi-code-square").Begin())
+            {
+                @(Html.CodeBlock(@"string onClick = ServerWebHelperConfiguration.CookieLanguage?
+    .GenerateOnClick(""fr-FR"") ?? ""return false;"";", CodeLanguage.CSharp)
+                    .SetTitle("Set a language cookie")
+                    .SetCopyButton()
+                    .SetCompact())
+            }
+        }
+    }
+}
+
+@using (Html.BlockBuilder().AsSectionContent().Begin())
+{
+    @Html.TitleBuilder().SetTitle("Localization and Session Guard", TitleLevel.Two).AsSectionHeading().Render()
+    @using (Html.RowBuilder().SetGapY(Gap.G4).Begin())
+    {
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col6, ResponsiveBreakpoint.Lg).Begin())
+        {
+            @using (Html.CardBuilder().SetTitle("Localized validation text", TitleLevel.Three).SetIconBootstrap("bi-translate").Begin())
+            {
+                @using (Html.PB_P().AsSmallMuted().AddClass("mb-2").Begin())
+                {
+                    @:Key:
+                    @using (Html.PB_Span().AsMonospace().Begin()) {
+                    @:FormBuilder_Field_Required 
+                }
+                }
+                @using (Html.BlockBuilder().Begin()) { @validationText }
+            }
+        }
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col6, ResponsiveBreakpoint.Lg).Begin())
+        {
+            @using (Html.CardBuilder().SetTitle("Labs host resource", TitleLevel.Three).SetIconBootstrap("bi-file-earmark-text").Begin())
+            {
+                @using (Html.PB_P().AsSmallMuted().AddClass("mb-2").Begin())
+                {
+                    @:Key:
+                    @using (Html.PB_Span().AsMonospace().Begin()) {
+                    @:LABS_SAMPLE_KEY 
+                }
+                }
+                @using (Html.BlockBuilder().Begin()) { @sampleText }
+            }
+        }
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).SetCol(ColSize.Col6, ResponsiveBreakpoint.Lg).Begin())
+        {
+            @using (Html.CardBuilder().SetTitle("Session guard order", TitleLevel.Three).SetIconBootstrap("bi-shield-lock").Begin())
+            {
+                @using (Html.PB_P().AsSmallMuted().AsNoMargin().Begin())
+                {
+                    @:Use ASP.NET Core session before the guard so downstream helpers can safely access session-backed values.
+                }
+            }
+        }
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).Begin())
+        {
+            @using (Html.CardBuilder().SetTitle("Middleware code", TitleLevel.Three).SetIconBootstrap("bi-code-square").Begin())
+            {
+                @(Html.CodeBlock(@"public static void UseApp(WebApplication app)
+{
+    app.UseSession();
+    app.UseSessionGuard();
+}", CodeLanguage.CSharp)
+                    .SetTitle("Middleware order")
+                    .SetCopyButton()
+                    .SetCompact())
+            }
+        }
+    }
+}

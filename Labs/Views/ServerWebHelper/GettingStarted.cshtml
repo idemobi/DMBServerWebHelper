@@ -1,0 +1,148 @@
+@using DMBBootstrapBuilder
+@using DMBComponentBuilder
+@using DMBEffectBuilder
+@using DMBPageBuilder
+@{
+    Layout = "_Layout";
+}
+
+@* ── Hero ── *@
+@using (Html.SectionBuilder().SetHeight(125, UnitSize.px).BootstrapBackgroundEffect(VariantStyle.Normal).Begin())
+{
+    @using (Html.FlexBlockBuilder().SetAlignItemsCenter().SetJustifyContentCenter().Begin())
+    {
+        @using (Html.BlockBuilder().AsTextCenter().Begin())
+        {
+            @Html.TitleBuilder().SetTitle("Getting Started — DMBServerWebHelper", TitleLevel.One).Render()
+            @using (Html.PB_P().AsLead().Begin())
+            {
+                @:Register web helpers after the shared server layer.
+            }
+        }
+    }
+}
+
+@using (Html.ContainerBuilder().SetPadding(SpacingSide.Y, SpacingSize.Five).Begin())
+{
+    @using (Html.RowBuilder().Begin())
+    {
+        @using (Html.ColBuilder().SetCol(ColSize.Col12).Begin())
+        {
+            @* ── Step 1 ── *@
+            @Html.TitleBuilder().SetTitle("1. Configure Services", TitleLevel.Two).AsSectionHeading().Render()
+            @using (Html.PB_P().Begin())
+            {
+                @:DMBServerWebHelper is registered after DMBServerHelper and before visual packages that depend on web request conventions.
+                @: Call
+                @using (Html.PB_Span().AsMonospace().Begin())
+                {
+                    @:LoadCommonConfig
+                }
+                @: during the service registration phase.
+            }
+            @(Html.CodeBlock(@"ServerWebHelperConfiguration.LoadCommonConfig(builder);", CodeLanguage.CSharp)
+                .SetTitle("Program.cs — services")
+                .SetCopyButton())
+
+            @* ── Step 2 ── *@
+            @Html.TitleBuilder().SetTitle("2. Use the Application Module", TitleLevel.Two).AsSubSectionHeading().Render()
+            @using (Html.PB_P().Begin())
+            {
+                @:Call
+                @using (Html.PB_Span().AsMonospace().Begin())
+                {
+                    @:UseApp
+                }
+                @: after building the application so the viewer can register middleware.
+            }
+            @(Html.CodeBlock("WebApplication app = builder.Build();\n\nServerWebHelperConfiguration.UseApp(app);", CodeLanguage.CSharp)
+                .SetTitle("Program.cs — middleware")
+                .SetCopyButton())
+
+            @* ── Step 3 ── *@
+            @Html.TitleBuilder().SetTitle("3. Enable Localization", TitleLevel.Two).AsSubSectionHeading().Render()
+            @using (Html.PB_P().Begin())
+            {
+                @:Web-localized resources for request and view scenarios are provided through
+                @using (Html.PB_Span().AsMonospace().Begin())
+                {
+                    @:ServerWebHelperLocalization
+                }
+                @:. Register them before views and validation messages need them.
+            }
+
+            @* ── Step 4 ── *@
+            @Html.TitleBuilder().SetTitle("4. Use Security Helpers", TitleLevel.Two).AsSubSectionHeading().Render()
+            @using (Html.PB_P().Begin())
+            {
+                @:Captcha and security helpers for forms and protected interactions.
+                @: Request, language, country and session guard utilities cover common ASP.NET Core workflows.
+            }
+
+            @* ── Key API quick reference ── *@
+            @using (Html.BlockBuilder().AsInfoCallout().Begin())
+            {
+                @using (Html.FlexBlockBuilder().Begin())
+                {
+                    @using (Html.BlockBuilder().AsCalloutIcon().Begin())
+                    {
+                        @using (Html.PB_Span().AddClass("bi bi-collection-fill fs-2 text-info").Begin()) { }
+                    }
+                    @using (Html.BlockBuilder().Begin())
+                    {
+                        @Html.TitleBuilder().SetTitle("Key API", TitleLevel.Five).AsAlertHeading().Render()
+                        @using (Html.BlockBuilder().AsSidebarRow().Begin())
+                        {
+                            @using (Html.PB_Span().AsMonospaceSmall().Begin())
+                            {
+                                @:ServerWebHelperConfiguration
+                            }
+                        }
+                        @using (Html.BlockBuilder().AsSidebarRow().Begin())
+                        {
+                            @using (Html.PB_Span().AsMonospaceSmall().Begin())
+                            {
+                                @:.UseApp(app)
+                            }
+                        }
+                        @using (Html.BlockBuilder().AsSidebarRow().Begin())
+                        {
+                            @using (Html.PB_Span().AsMonospaceSmall().Begin())
+                            {
+                                @:ServerWebHelperLocalization
+                            }
+                        }
+                        @using (Html.BlockBuilder().AsSidebarRow().Begin())
+                        {
+                            @using (Html.PB_Span().AsMonospaceSmall().Begin())
+                            {
+                                @:CaptchaHelper
+                            }
+                        }
+                        @using (Html.BlockBuilder().AsSidebarRow().Begin())
+                        {
+                            @using (Html.PB_Span().AsMonospaceSmall().Begin())
+                            {
+                                @:SessionGuard
+                            }
+                        }
+                    }
+                }
+            }
+
+            @* ── Next Step ── *@
+            @using (Html.BlockBuilder().AsSidebarNote().Begin())
+            {
+                @using (Html.BlockBuilder().AsTextCenter().Begin())
+                {
+                    @Html.TitleBuilder().SetTitle("Understand the architecture and layer responsibilities", TitleLevel.Four).Render()
+                    @using (Html.PB_P().AsSmallMuted().Begin())
+                    {
+                        @:Learn how DMBServerWebHelper fits into the DMB stack between the server and rendering layers.
+                    }
+                    @Html.Button(ActionItemFactory.AspRoute("ServerWebHelper", "Architecture").SetTitle("Architecture").SetIcon(IconStruct.Bootstrap("bi-diagram-3")).SetVariant(VariantStyle.Primary)).Render()
+                }
+            }
+        }
+    }
+}
