@@ -7,8 +7,6 @@
 
 #region
 
-using System;
-using System.Linq;
 using DMBServerWebHelper;
 using DMBserverWebHelperUnitTest.Helpers;
 using Microsoft.AspNetCore.Http;
@@ -62,66 +60,6 @@ internal sealed class CaptchaFactoryTests
     }
 
     [Test]
-    public void TestCaptchaComparesStoredSessionValueCaseInsensitively()
-    {
-        DefaultHttpContext context = CreateSessionContext();
-        context.Session.SetString("Captcha", "ABCD");
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(CaptchaFactory.GetStoredCaptcha(context), Is.EqualTo("ABCD"));
-            Assert.That(CaptchaFactory.TestCaptcha(context, "abcd"), Is.True);
-            Assert.That(context.Session.Keys, Does.Not.Contain("Captcha"));
-        });
-    }
-
-    [Test]
-    public void TestCaptchaRejectsHistoricalDefaultWhenNoSessionValueExists()
-    {
-        DefaultHttpContext context = CreateSessionContext();
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(CaptchaFactory.GetStoredCaptcha(context), Is.Empty);
-            Assert.That(CaptchaFactory.TestCaptcha(context, "not defined"), Is.False);
-            Assert.That(CaptchaFactory.TestCaptcha(context, string.Empty), Is.False);
-        });
-    }
-
-    [Test]
-    public void TestCaptchaCannotReplayAValidValue()
-    {
-        DefaultHttpContext context = CreateSessionContext();
-        context.Session.SetString("Captcha", "REPLAY");
-
-        bool firstAttempt = CaptchaFactory.TestCaptcha(context, "replay");
-        bool secondAttempt = CaptchaFactory.TestCaptcha(context, "replay");
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(firstAttempt, Is.True);
-            Assert.That(secondAttempt, Is.False);
-            Assert.That(context.Session.Keys, Does.Not.Contain("Captcha"));
-        });
-    }
-
-    [Test]
-    public void TestCaptchaConsumesStoredValueAfterFailedAttempt()
-    {
-        DefaultHttpContext context = CreateSessionContext();
-        context.Session.SetString("Captcha", "SECRET");
-
-        bool result = CaptchaFactory.TestCaptcha(context, "wrong");
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(result, Is.False);
-            Assert.That(context.Session.Keys, Does.Not.Contain("Captcha"));
-            Assert.That(CaptchaFactory.TestCaptcha(context, "SECRET"), Is.False);
-        });
-    }
-
-    [Test]
     public void RandomCaptchaToImageStoresUppercaseCaptchaAndReturnsPngBase64()
     {
         DefaultHttpContext context = CreateSessionContext();
@@ -169,6 +107,66 @@ internal sealed class CaptchaFactoryTests
             Assert.That(results.All(result => result.StoredCaptcha.Length == 8), Is.True);
             Assert.That(results.All(result => result.Accepted), Is.True);
             Assert.That(results.All(result => result.PngHeader.SequenceEqual(new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 })), Is.True);
+        });
+    }
+
+    [Test]
+    public void TestCaptchaCannotReplayAValidValue()
+    {
+        DefaultHttpContext context = CreateSessionContext();
+        context.Session.SetString("Captcha", "REPLAY");
+
+        bool firstAttempt = CaptchaFactory.TestCaptcha(context, "replay");
+        bool secondAttempt = CaptchaFactory.TestCaptcha(context, "replay");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(firstAttempt, Is.True);
+            Assert.That(secondAttempt, Is.False);
+            Assert.That(context.Session.Keys, Does.Not.Contain("Captcha"));
+        });
+    }
+
+    [Test]
+    public void TestCaptchaComparesStoredSessionValueCaseInsensitively()
+    {
+        DefaultHttpContext context = CreateSessionContext();
+        context.Session.SetString("Captcha", "ABCD");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(CaptchaFactory.GetStoredCaptcha(context), Is.EqualTo("ABCD"));
+            Assert.That(CaptchaFactory.TestCaptcha(context, "abcd"), Is.True);
+            Assert.That(context.Session.Keys, Does.Not.Contain("Captcha"));
+        });
+    }
+
+    [Test]
+    public void TestCaptchaConsumesStoredValueAfterFailedAttempt()
+    {
+        DefaultHttpContext context = CreateSessionContext();
+        context.Session.SetString("Captcha", "SECRET");
+
+        bool result = CaptchaFactory.TestCaptcha(context, "wrong");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.False);
+            Assert.That(context.Session.Keys, Does.Not.Contain("Captcha"));
+            Assert.That(CaptchaFactory.TestCaptcha(context, "SECRET"), Is.False);
+        });
+    }
+
+    [Test]
+    public void TestCaptchaRejectsHistoricalDefaultWhenNoSessionValueExists()
+    {
+        DefaultHttpContext context = CreateSessionContext();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(CaptchaFactory.GetStoredCaptcha(context), Is.Empty);
+            Assert.That(CaptchaFactory.TestCaptcha(context, "not defined"), Is.False);
+            Assert.That(CaptchaFactory.TestCaptcha(context, string.Empty), Is.False);
         });
     }
 }

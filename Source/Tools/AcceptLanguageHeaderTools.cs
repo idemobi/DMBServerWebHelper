@@ -7,35 +7,32 @@
 
 #region
 
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 
 #endregion
 
 namespace DMBServerWebHelper
 {
     /// <summary>
-    /// Contains utility methods for parsing and processing the Accept-Language HTTP header,
-    /// used to extract prioritized language preferences from client requests.
+    ///     Contains utility methods for parsing and processing the Accept-Language HTTP header,
+    ///     used to extract prioritized language preferences from client requests.
     /// </summary>
     internal static class AcceptLanguageHeaderTools
     {
         #region Static methods
 
         /// <summary>
-        /// Parses the provided Accept-Language HTTP header value to extract a list of accepted languages
-        /// sorted by their quality values and preferences.
+        ///     Parses the provided Accept-Language HTTP header value to extract a list of accepted languages
+        ///     sorted by their quality values and preferences.
         /// </summary>
         /// <param name="acceptLanguageHeader">
-        /// A string representing the value of the Accept-Language HTTP header.
-        /// This value specifies the client's language preferences in a prioritized order.
+        ///     A string representing the value of the Accept-Language HTTP header.
+        ///     This value specifies the client's language preferences in a prioritized order.
         /// </param>
         /// <returns>
-        /// An ordered, read-only list of language codes extracted from the Accept-Language header,
-        /// sorted by quality (descending) and their order of appearance. If the header is null, empty,
-        /// or cannot be parsed, an empty list is returned.
+        ///     An ordered, read-only list of language codes extracted from the Accept-Language header,
+        ///     sorted by quality (descending) and their order of appearance. If the header is null, empty,
+        ///     or cannot be parsed, an empty list is returned.
         /// </returns>
         internal static IReadOnlyList<string> GetAcceptedLanguages(string? acceptLanguageHeader)
         {
@@ -53,6 +50,42 @@ namespace DMBServerWebHelper
                 .ThenBy(language => language.Index)
                 .Select(language => language.Value)
                 .ToArray();
+        }
+
+        /// <summary>
+        ///     Retrieves the preferred language from the provided Accept-Language HTTP header value.
+        ///     This is determined by selecting the first language from the ordered list of accepted languages
+        ///     based on their quality values and preferences.
+        /// </summary>
+        /// <param name="acceptLanguageHeader">
+        ///     A string representing the value of the Accept-Language HTTP header. This value specifies
+        ///     the client's language preferences in a prioritized order.
+        /// </param>
+        /// <returns>
+        ///     A string containing the preferred language code extracted from the Accept-Language header,
+        ///     or null if the header is null, empty, or cannot be parsed.
+        /// </returns>
+        internal static string? GetPreferredLanguage(string? acceptLanguageHeader)
+        {
+            return GetAcceptedLanguages(acceptLanguageHeader).FirstOrDefault();
+        }
+
+        private static bool IsSupportedLanguage(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value) || value == "*")
+            {
+                return false;
+            }
+
+            try
+            {
+                CultureInfo.GetCultureInfo(value);
+                return true;
+            }
+            catch (CultureNotFoundException)
+            {
+                return false;
+            }
         }
 
         private static (string Value, double Quality, int Index)? TryParseLanguage(string rawLanguage, int index)
@@ -91,42 +124,6 @@ namespace DMBServerWebHelper
             }
 
             return (value, quality, index);
-        }
-
-        private static bool IsSupportedLanguage(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value) || value == "*")
-            {
-                return false;
-            }
-
-            try
-            {
-                CultureInfo.GetCultureInfo(value);
-                return true;
-            }
-            catch (CultureNotFoundException)
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Retrieves the preferred language from the provided Accept-Language HTTP header value.
-        /// This is determined by selecting the first language from the ordered list of accepted languages
-        /// based on their quality values and preferences.
-        /// </summary>
-        /// <param name="acceptLanguageHeader">
-        /// A string representing the value of the Accept-Language HTTP header. This value specifies
-        /// the client's language preferences in a prioritized order.
-        /// </param>
-        /// <returns>
-        /// A string containing the preferred language code extracted from the Accept-Language header,
-        /// or null if the header is null, empty, or cannot be parsed.
-        /// </returns>
-        internal static string? GetPreferredLanguage(string? acceptLanguageHeader)
-        {
-            return GetAcceptedLanguages(acceptLanguageHeader).FirstOrDefault();
         }
 
         #endregion

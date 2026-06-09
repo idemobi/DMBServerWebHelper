@@ -7,7 +7,6 @@
 
 #region
 
-using System;
 using DMBServerWebHelper;
 using DMBserverWebHelperUnitTest.Helpers;
 using Microsoft.AspNetCore.Builder;

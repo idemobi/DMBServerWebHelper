@@ -7,7 +7,6 @@
 
 #region
 
-using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 

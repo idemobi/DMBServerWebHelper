@@ -7,10 +7,6 @@
 
 #region
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using DMBServerWebHelper;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
@@ -22,64 +18,12 @@ namespace DMBserverWebHelperUnitTest;
 [TestFixture]
 internal sealed class SessionGuardMiddlewareTests
 {
-    [Test]
-    public async Task InvokeAsyncLoadsUnavailableSessionBeforeNextMiddleware()
-    {
-        TrackingSession session = new TrackingSession(isAvailable: false);
-        bool nextCalled = false;
-        SessionGuardMiddleware middleware = new SessionGuardMiddleware(context =>
-        {
-            nextCalled = true;
-            Assert.That(context.Session.IsAvailable, Is.True);
-            return Task.CompletedTask;
-        });
-        DefaultHttpContext context = new DefaultHttpContext
-        {
-            Session = session
-        };
-
-        await middleware.InvokeAsync(context);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(nextCalled, Is.True);
-            Assert.That(session.LoadCount, Is.EqualTo(1));
-        });
-    }
-
-    [Test]
-    public async Task InvokeAsyncDoesNotLoadAlreadyAvailableSession()
-    {
-        TrackingSession session = new TrackingSession(isAvailable: true);
-        bool nextCalled = false;
-        SessionGuardMiddleware middleware = new SessionGuardMiddleware(_ =>
-        {
-            nextCalled = true;
-            return Task.CompletedTask;
-        });
-        DefaultHttpContext context = new DefaultHttpContext
-        {
-            Session = session
-        };
-
-        await middleware.InvokeAsync(context);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(nextCalled, Is.True);
-            Assert.That(session.LoadCount, Is.Zero);
-        });
-    }
-
     private sealed class TrackingSession : ISession
     {
-        private readonly Dictionary<string, byte[]> _values = new Dictionary<string, byte[]>();
-        private bool _isAvailable;
+        #region Instance fields and properties
 
-        public TrackingSession(bool isAvailable)
-        {
-            _isAvailable = isAvailable;
-        }
+        private bool _isAvailable;
+        private readonly Dictionary<string, byte[]> _values = new Dictionary<string, byte[]>();
 
         public int LoadCount { get; private set; }
 
@@ -90,6 +34,23 @@ internal sealed class SessionGuardMiddlewareTests
         public bool IsAvailable => _isAvailable;
 
         public IEnumerable<string> Keys => _values.Keys;
+
+        #endregion
+
+        #endregion
+
+        #region Instance constructors and destructors
+
+        public TrackingSession(bool isAvailable)
+        {
+            _isAvailable = isAvailable;
+        }
+
+        #endregion
+
+        #region Instance methods
+
+        #region From interface ISession
 
         public void Clear()
         {
@@ -124,5 +85,56 @@ internal sealed class SessionGuardMiddlewareTests
         }
 
         #endregion
+
+        #endregion
+    }
+
+    [Test]
+    public async Task InvokeAsyncDoesNotLoadAlreadyAvailableSession()
+    {
+        TrackingSession session = new TrackingSession(isAvailable: true);
+        bool nextCalled = false;
+        SessionGuardMiddleware middleware = new SessionGuardMiddleware(_ =>
+        {
+            nextCalled = true;
+            return Task.CompletedTask;
+        });
+        DefaultHttpContext context = new DefaultHttpContext
+        {
+            Session = session
+        };
+
+        await middleware.InvokeAsync(context);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(nextCalled, Is.True);
+            Assert.That(session.LoadCount, Is.Zero);
+        });
+    }
+
+    [Test]
+    public async Task InvokeAsyncLoadsUnavailableSessionBeforeNextMiddleware()
+    {
+        TrackingSession session = new TrackingSession(isAvailable: false);
+        bool nextCalled = false;
+        SessionGuardMiddleware middleware = new SessionGuardMiddleware(context =>
+        {
+            nextCalled = true;
+            Assert.That(context.Session.IsAvailable, Is.True);
+            return Task.CompletedTask;
+        });
+        DefaultHttpContext context = new DefaultHttpContext
+        {
+            Session = session
+        };
+
+        await middleware.InvokeAsync(context);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(nextCalled, Is.True);
+            Assert.That(session.LoadCount, Is.EqualTo(1));
+        });
     }
 }

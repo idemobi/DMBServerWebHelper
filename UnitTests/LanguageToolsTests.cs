@@ -37,31 +37,10 @@ internal sealed class LanguageToolsTests
     #endregion
 
     [Test]
-    public void ResolveLanguageReturnsDefaultWhenNoSignalExists()
+    public void ResolveLanguageFallsBackToDefaultForMalformedAcceptLanguage()
     {
         DefaultHttpContext context = new DefaultHttpContext();
-
-        string language = LanguageTools.ResolveLanguage(context);
-
-        Assert.That(language, Is.EqualTo("en-US"));
-    }
-
-    [Test]
-    public void ResolveLanguageUsesAcceptLanguageWhenNoFeatureOrCookieExists()
-    {
-        DefaultHttpContext context = new DefaultHttpContext();
-        context.Request.Headers["Accept-Language"] = "fr-CA,fr;q=0.9";
-
-        string language = LanguageTools.ResolveLanguage(context);
-
-        Assert.That(language, Is.EqualTo("fr-CA"));
-    }
-
-    [Test]
-    public void ResolveLanguageUsesHighestQualityAcceptLanguage()
-    {
-        DefaultHttpContext context = new DefaultHttpContext();
-        context.Request.Headers["Accept-Language"] = "fr-CA;q=0.4,en-US;q=0.9,fr;q=0.8";
+        context.Request.Headers["Accept-Language"] = "fr-FR;q=broken";
 
         string language = LanguageTools.ResolveLanguage(context);
 
@@ -91,10 +70,31 @@ internal sealed class LanguageToolsTests
     }
 
     [Test]
-    public void ResolveLanguageFallsBackToDefaultForMalformedAcceptLanguage()
+    public void ResolveLanguageReturnsDefaultWhenNoSignalExists()
     {
         DefaultHttpContext context = new DefaultHttpContext();
-        context.Request.Headers["Accept-Language"] = "fr-FR;q=broken";
+
+        string language = LanguageTools.ResolveLanguage(context);
+
+        Assert.That(language, Is.EqualTo("en-US"));
+    }
+
+    [Test]
+    public void ResolveLanguageUsesAcceptLanguageWhenNoFeatureOrCookieExists()
+    {
+        DefaultHttpContext context = new DefaultHttpContext();
+        context.Request.Headers["Accept-Language"] = "fr-CA,fr;q=0.9";
+
+        string language = LanguageTools.ResolveLanguage(context);
+
+        Assert.That(language, Is.EqualTo("fr-CA"));
+    }
+
+    [Test]
+    public void ResolveLanguageUsesHighestQualityAcceptLanguage()
+    {
+        DefaultHttpContext context = new DefaultHttpContext();
+        context.Request.Headers["Accept-Language"] = "fr-CA;q=0.4,en-US;q=0.9,fr;q=0.8";
 
         string language = LanguageTools.ResolveLanguage(context);
 

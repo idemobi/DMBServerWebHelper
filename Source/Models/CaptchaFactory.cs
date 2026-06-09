@@ -7,10 +7,6 @@
 
 #region
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using DMBServerHelper;
@@ -75,15 +71,6 @@ namespace DMBServerWebHelper
         #endregion
 
         #region Static methods
-
-        /// <summary>Returns a cryptographically secure random double in [0.0, 1.0).</summary>
-        private static double GetSecureDouble()
-        {
-            Span<byte> bytes = stackalloc byte[8];
-            RandomNumberGenerator.Fill(bytes);
-            ulong value = BitConverter.ToUInt64(bytes);
-            return (value >> 11) / (double)(1UL << 53);
-        }
 
         /// <summary>
         ///     Renders the captcha currently stored in the session as a PNG file stream result.
@@ -197,6 +184,15 @@ namespace DMBServerWebHelper
                 }
 
             return imageBytes;
+        }
+
+        /// <summary>Returns a cryptographically secure random double in [0.0, 1.0).</summary>
+        private static double GetSecureDouble()
+        {
+            Span<byte> bytes = stackalloc byte[8];
+            RandomNumberGenerator.Fill(bytes);
+            ulong value = BitConverter.ToUInt64(bytes);
+            return (value >> 11) / (double)(1UL << 53);
         }
 
         /// <summary>
