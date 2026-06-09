@@ -18,11 +18,11 @@
     <ItemGroup>
         <ProjectReference Include="..\Labs\DMBServerWebHelperLabs.csproj" />
         <ProjectReference Include="..\Source\DMBServerWebHelper.csproj" />
-        <PackageReference Include="DMBServerHelper" Version="0.18.0-preview.1" />
-        <PackageReference Include="DMBPageBuilder" Version="0.18.0-preview.1" />
-        <PackageReference Include="DMBBootstrapBuilder" Version="0.18.0-preview.1" />
-        <PackageReference Include="DMBComponentBuilder" Version="0.18.0-preview.1" />
-        <PackageReference Include="DMBEffectBuilder" Version="0.18.0-preview.1" />
+        <PackageReference Include="DMBServerHelper" Version="0.19.0" />
+        <PackageReference Include="DMBPageBuilder" Version="0.19.0" />
+        <PackageReference Include="DMBBootstrapBuilder" Version="0.19.0" />
+        <PackageReference Include="DMBComponentBuilder" Version="0.19.0" />
+        <PackageReference Include="DMBEffectBuilder" Version="0.19.0" />
     </ItemGroup>
 
 </Project>
