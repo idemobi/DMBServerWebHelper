@@ -30,8 +30,8 @@
         <VersionBase>$([System.DateTime]::UtcNow.ToString("yyyy.Mdd.HHmm"))</VersionBase>
         
         <BuildDate>$([System.DateTime]::UtcNow.ToString("yyyy-MM-dd HH:mm:ss"))</BuildDate>
-        <Version>0.20.0</Version>
-        <FileVersion>0.20.0.0</FileVersion>
+        <Version>0.21.0</Version>
+        <FileVersion>0.21.0.0</FileVersion>
         <AssemblyVersion>1.0.0.0</AssemblyVersion>
         <Company>idéMobi</Company>
         <Authors>Jean-François CONTART, Quentin BOULOGNE, Camille GOLLIOT</Authors>
@@ -62,7 +62,7 @@
     <Choose>
         <When Condition=" '$(Configuration)' == 'NuGet' ">
             <ItemGroup Label="Case NuGet">
-                <PackageReference Include="DMBServerHelper" Version="0.20.0" />
+                <PackageReference Include="DMBServerHelper" Version="0.21.0" />
             </ItemGroup>
         </When>
         <Otherwise>
@@ -72,7 +72,7 @@
         </Otherwise>
     </Choose>
     <ItemGroup Label="Import package">
-        <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="10.0.8" />
+        <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="10.0.9" />
         <PackageReference Include="SkiaSharp" Version="3.119.4" />
         <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.119.4" />
         <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="3.119.4" />
